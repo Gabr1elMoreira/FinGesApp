@@ -1,4 +1,4 @@
-const API_URL = "https://fingesapp.vercel.app";
+const API_URL = "https://fingesapp-backend.vercel.app";
 
 export async function apiRequest(path: string, options: RequestInit = {}) {
     const token = localStorage.getItem("finanza_token");
