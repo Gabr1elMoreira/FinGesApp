@@ -122,7 +122,8 @@ export const getMe = async (req: AuthRequest, res: Response) => {
         if (!req.user) return res.status(401).json({ error: "NÃO AUTORIZADO" });
         const user = await prisma.user.findUnique({
             where: { id: req.user.userId },
-            select: { id: true, name: true, email: true, avatar: true, enabledCategories: true }
+            select: { id: true, name: true, email: true, avatar: true, enabledCategories: true, role: true }
+
         });
 
         if (!user) return res.status(404).json({ error: "USUÁRIO NÃO ENCONTRADO" });
@@ -132,9 +133,11 @@ export const getMe = async (req: AuthRequest, res: Response) => {
             name: user.name,
             email: user.email,
             avatar: user.avatar || '',
+            role: user.role,
             settings: {
                 enabledCategories: user.enabledCategories
             }
+
         });
     } catch (e) {
         res.status(500).json({ error: "ERRO NO SERVIDOR" });

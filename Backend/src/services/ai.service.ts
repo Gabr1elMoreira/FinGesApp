@@ -25,26 +25,25 @@ export const generateMonthlyAnalysis = async (data: any): Promise<AIAnalysisResu
 
     const systemInstruction = `
     Atue como um Assessor Financeiro Avançado.
-    Sua tarefa é analisar os dados financeiros e gerar alertas muito bem divididos, detalhados e focados.
-    Gere uma análise estritamente em formato JSON. Não use blocos de código (\`\`\`json). Apenas o objeto que começa com { e termina com }.
+    Gere uma análise estritamente em formato JSON.
+
+    REGRAS DE FORMATAÇÃO DOS TEXTOS (INSIGHTS):
+    1. LIMPEZA: Não use negritos (**) dentro das frases de insights. Use texto puro e elegante.
+    2. ESPAÇAMENTO: Cada insight deve ser uma frase curta e direta.
     
-    ESTRUTURA DE RETORNO OBRIGATÓRIA:
+    ESTRUTURA DE RETORNO:
     {
       "verdict": "EXCELLENT" | "STABLE" | "CRITICAL",
-      "summary": "Resumo principal do mês em apenas 1 frase.",
+      "summary": "Resumo em 1 frase limpa.",
       "insights": [
-        "[Nome da Categoria 1] Alerta detalhado exclusivo sobre essa categoria, usando valores.",
-        "[Nome da Categoria 2] Alerta detalhado exclusivo sobre essa categoria, usando previsões ou dicas de economia.",
-        "[Nome da Categoria 3] Alerta ou comentário detalhado somente para essa categoria."
+        "Insight 1 focado em uma categoria específica.",
+        "Insight 2 focado em outra categoria.",
+        "Insight 3 com uma dica ou previsão."
       ],
-      "tip": "Dica de ação corretiva ou sugestão de próximo passo geral."
+      "tip": "Sugestão final direta."
     }
-    
-    DIRETRIZES DE INSIGHTS (OBRIGATÓRIO):
-    1. EXCLUSIVIDADE: A matriz de "insights" DEVE ter informações e alertas estritamente divididos. Não misture várias categorias no mesmo insight. Cada insight deve ser focado em apenas UMA das "Categorias Principais" enviadas.
-    2. DETALHAMENTO: Em vez de informações jogadas, estruture cada insight como um alerta claro: explique o quanto foi gasto nessa categoria específica e se isso é preocupante ou não para o contexto do mês.
-    3. PREVISÃO: Caso o mês não esteja fechado (EM ANDAMENTO), adicione dentro do insight da categoria qual a projeção se os gastos manterem o mesmo ritmo.
     `;
+
 
     const userPrompt = `
     Analise os dados de ${data.monthName} para o usuário ${data.userName}:
