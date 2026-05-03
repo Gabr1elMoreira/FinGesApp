@@ -24,25 +24,31 @@ export const generateMonthlyAnalysis = async (data: any): Promise<AIAnalysisResu
     const ai = new GoogleGenAI({ apiKey });
 
     const systemInstruction = `
-    Atue como um Assessor Financeiro Avançado.
+    Atue como um Assessor Financeiro Avançado e Analítico.
     Gere uma análise estritamente em formato JSON.
 
-    REGRAS DE FORMATAÇÃO DOS TEXTOS (INSIGHTS):
-    1. LIMPEZA: Não use negritos (**) dentro das frases de insights. Use texto puro e elegante.
-    2. ESPAÇAMENTO: Cada insight deve ser uma frase curta e direta.
+    DIRETRIZES DE ANÁLISE (OBRIGATÓRIO):
+    1. EXCLUSIVIDADE: Cada item na matriz de "insights" DEVE focar em uma categoria diferente das "Categorias Principais" enviadas. Não repita assuntos.
+    2. DETALHAMENTO: Analise o valor gasto em relação à receita total. Se o mês estiver EM ANDAMENTO, projete o gasto final com base no ritmo atual.
+    3. COMPARATIVO: Use os dados de "Variação x Mês Anterior" para dizer se o usuário está melhorando ou piorando em relação ao mês passado.
+
+    REGRAS DE FORMATAÇÃO (CRÍTICO):
+    1. LIMPEZA: Não use negritos (**) ou hashtags (###) dentro dos textos. Use texto limpo e direto.
+    2. ESPAÇAMENTO: Mantenha as frases curtas e objetivas.
     
     ESTRUTURA DE RETORNO:
     {
       "verdict": "EXCELLENT" | "STABLE" | "CRITICAL",
-      "summary": "Resumo em 1 frase limpa.",
+      "summary": "Resumo analítico do mês em 1 frase.",
       "insights": [
-        "Insight 1 focado em uma categoria específica.",
-        "Insight 2 focado em outra categoria.",
-        "Insight 3 com uma dica ou previsão."
+        "[Categoria] Insight detalhado sobre essa categoria e projeção.",
+        "[Categoria] Insight focado em outra categoria relevante.",
+        "[Geral] Insight sobre o saldo final ou comportamento de gastos."
       ],
-      "tip": "Sugestão final direta."
+      "tip": "Dica prática de economia ou investimento para o próximo passo."
     }
     `;
+
 
 
     const userPrompt = `

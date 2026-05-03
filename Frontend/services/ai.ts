@@ -39,7 +39,17 @@ export const aiService = {
     const historicalExpense = otherTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0) / pastMonthsCount;
     const historicalIncome = otherTxs.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0) / pastMonthsCount;
 
-    const goals = storageService.getGoals(user.id);
+    const activeGoals = goals.filter(g => {
+      if (!g.deadline) return true;
+      const deadlineDate = new Date(g.deadline);
+      // Uma meta só é relevante se o prazo não expirou antes do mês de análise
+      const deadlineMonth = deadlineDate.getUTCMonth();
+      const deadlineYear = deadlineDate.getUTCFullYear();
+      
+      if (deadlineYear < year) return false;
+      if (deadlineYear === year && deadlineMonth < month) return false;
+      return true;
+    });
 
     const contextData = {
       mesReferencia: currentMonthLabel,
@@ -51,34 +61,35 @@ export const aiService = {
         despesas: historicalExpense,
         receitas: historicalIncome
       },
-      metasGlobais: goals.map(g => ({
+      metasGlobais: activeGoals.map(g => ({
         descricao: g.description,
         alvo: g.targetAmount,
         tipo: g.type,
         progressoAtual: g.currentAmount || 0,
         categoria: g.category
       })),
+
       saldoMesAtual: currentMonthTxs.reduce((acc, t) => t.type === 'INCOME' ? acc + t.amount : acc - t.amount, 0),
       totalGastosMesAtual: currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0)
     };
 
-    const systemInstruction = `Você é o FinGes AI, assistente financeiro de ${user.name}.
-CONTEXTO: Dados de ${currentMonthLabel} (${isCurrentMonth ? "em andamento" : "fechado"}).
+    const systemInstruction = `Você é o FinGes AI, assistente financeiro avançado e proativo de ${user.name}.
+CONTEXTO: Visualizando ${currentMonthLabel} (${isCurrentMonth ? "em andamento" : "fechado"}).
 
-REGRAS DE FORMATAÇÃO (CRÍTICO):
-1. ESTILO LIMPO: Evite o uso excessivo de negritos (***) e títulos (###). Use Markdown de forma elegante e minimalista.
-2. ESPAÇAMENTO: Use OBRIGATORIAMENTE duas quebras de linha (\n\n) entre cada parágrafo, categoria ou frase importante. Nunca deixe o texto amontoado.
-3. VALORES: Sempre use R$ 0,00.
+REGRAS DE FORMATAÇÃO (OBRIGATÓRIO):
+1. LIMPEZA TOTAL: Nunca use negritos excessivos (***) ou muitos títulos (###). Mantenha o texto sóbrio e elegante.
+2. ESPAÇAMENTO DUPLO: Use SEMPRE duas quebras de linha (\n\n) entre cada parágrafo, tópico ou sugestão. O texto deve "respirar".
 
-DIRETRIZES:
-- Analise se o comportamento atual é sustentável comparando com médias históricas.
-- Se houver metas, relacione o progresso com os gastos atuais de forma direta.
+REGRAS DE INTELIGÊNCIA:
+1. PROATIVIDADE: Como o mês está ${isCurrentMonth ? "ativo, projete os gastos até o fim do mês usando as médias históricas" : "fechado, faça uma análise crítica do resultado"}.
+2. METAS: Relacione os gastos atuais com as metasGlobais. Seja incisivo se uma meta estiver em risco.
+3. EXPLICABILIDADE: Justifique suas análises citando os valores de categorias ou médias enviadas.
 
 DADOS PARA ANÁLISE:
 ${JSON.stringify(contextData)}
 
-SUGESTÕES DINÂMICAS:
-Ao final, adicione SUGESTÕES de perguntas em uma lista simples marcada por [SUGESTOES].`;
+Ao final, adicione SUGESTÕES de perguntas úteis marcadas com [SUGESTOES].`;
+
 
 
     try {
@@ -111,8 +122,18 @@ Ao final, adicione SUGESTÕES de perguntas em uma lista simples marcada por [SUG
 
     const expenses = currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
     const goals = storageService.getGoals(user.id);
+    const activeGoals = goals.filter(g => {
+      if (!g.deadline) return true;
+      const deadlineDate = new Date(g.deadline);
+      const deadlineMonth = deadlineDate.getUTCMonth();
+      const deadlineYear = deadlineDate.getUTCFullYear();
+      
+      if (deadlineYear < year) return false;
+      if (deadlineYear === year && deadlineMonth < month) return false;
+      return true;
+    });
 
-    goals.filter(g => g.type === 'SPENDING_LIMIT').forEach(g => {
+    activeGoals.filter(g => g.type === 'SPENDING_LIMIT').forEach(g => {
       let specificExpenses = expenses;
       if (g.category) {
         specificExpenses = currentMonthTxs.filter(t => t.type === 'EXPENSE' && t.category === g.category).reduce((acc, t) => acc + t.amount, 0);
@@ -124,6 +145,7 @@ Ao final, adicione SUGESTÕES de perguntas em uma lista simples marcada por [SUG
         alerts.push("[ATENÇÃO] Você já gastou " + ((specificExpenses / g.targetAmount) * 100).toFixed(0) + "% do seu limite para '" + g.description + "'.");
       }
     });
+
 
     return alerts;
   }
