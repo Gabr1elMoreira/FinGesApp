@@ -33,18 +33,28 @@ const AdminPanel: React.FC = () => {
     const [aiInsights, setAiInsights] = useState<string[]>([]);
     const [loadingInsights, setLoadingInsights] = useState(false);
     const [logs, setLogs] = useState(() => {
-        const savedLogs = localStorage.getItem('admin_audit_logs');
-        return savedLogs ? JSON.parse(savedLogs) : [
-            { msg: "Centro de Comando Inicializado", time: "Agora", type: "info" as const },
-            { msg: "Sincronização de segurança concluída", time: "Há 1 min", type: "success" as const },
-        ];
+        try {
+            const savedLogs = localStorage.getItem('admin_audit_logs');
+            return savedLogs ? JSON.parse(savedLogs) : [
+                { msg: "Centro de Comando Inicializado", time: "Agora", type: "info" as const },
+                { msg: "Sincronização de segurança concluída", time: "Há 1 min", type: "success" as const },
+            ];
+        } catch (e) {
+            return [
+                { msg: "Centro de Comando Inicializado", time: "Agora", type: "info" as const },
+                { msg: "Erro ao carregar logs locais", time: "Agora", type: "warning" as const },
+            ];
+        }
     });
+
 
     useEffect(() => {
         localStorage.setItem('admin_audit_logs', JSON.stringify(logs));
     }, [logs]);
 
     useEffect(() => {
+        if (!supabase || !supabase.channel) return;
+
         // Escutar logs de auditoria em tempo real via Supabase
         const channel = supabase
             .channel('admin_audit_logs')
@@ -60,6 +70,7 @@ const AdminPanel: React.FC = () => {
                 }
             )
             .subscribe();
+
 
         return () => {
             supabase.removeChannel(channel);

@@ -38,6 +38,8 @@ const App: React.FC = () => {
 
   // Supabase Realtime Listener (Broadcast)
   useEffect(() => {
+    if (!supabase || !supabase.channel) return;
+
     const channel = supabase
       .channel('public_system_notifications')
       .on('postgres_changes', 
@@ -53,6 +55,7 @@ const App: React.FC = () => {
     };
   }, []);
 
+
   // Inicialização Robusta via API
   useEffect(() => {
     const init = async () => {
@@ -63,14 +66,21 @@ const App: React.FC = () => {
         if (token) {
           // Busca o usuário logado e suas transações via Backend
           const activeUser = await apiRequest('/auth/me');
+          
+          if (!activeUser) {
+            handleLogout();
+            return;
+          }
+
           const allTransactions = await apiRequest('/transactions');
 
           setUser(activeUser);
-          setTransactions(allTransactions);
+          setTransactions(allTransactions || []);
           setIsLoggedIn(true);
           // Verifica se há novas notificações não lidas ao iniciar
           checkLatestBroadcast();
         }
+
       } catch (err) {
         console.error("Erro ao carregar dados da API:", err);
         handleLogout();
