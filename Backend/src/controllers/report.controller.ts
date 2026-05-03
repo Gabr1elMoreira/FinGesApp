@@ -33,10 +33,8 @@ export const getMonthlyReport = async (req: AuthRequest, res: Response) => {
 
         const isManualRequest = req.query.force === 'true';
         
-        // Verifica se é o mês atual
-        const isCurrentMonth = (month === currentMonth && year === currentYear);
-        
         // Verifica se o mês já passou completamente
+
         const isPastMonth = (year < currentYear) || (year === currentYear && month < currentMonth);
         
         // Verifica se hoje é o último dia do mês (usando UTC para consistência)
