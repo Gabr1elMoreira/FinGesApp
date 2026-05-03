@@ -1,16 +1,20 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import { json } from 'body-parser';
 import authRoutes from './routes/auth.routes';
 import transactionRoutes from './routes/transaction.routes';
 import userRoutes from './routes/user.routes';
+import adminRoutes from './routes/admin.routes';
+import reportRoutes from './routes/report.routes';
 
 const app = express();
 
 // 1. Configuração de CORS
 app.use(cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
 }));
 
@@ -26,5 +30,7 @@ app.get('/', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/users', userRoutes);
+app.use('/admin', adminRoutes);
+app.use('/reports', reportRoutes);
 
 export { app };

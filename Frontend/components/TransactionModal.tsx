@@ -78,18 +78,27 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = {
-      description: formData.description,
-      amount: Number(formData.amount),
-      type: formData.type,
-      category: formData.category,
-      paymentMethod: formData.paymentMethod,
-      date: new Date(formData.date + 'T00:00:00Z').toISOString(),
-      isPaid: formData.isPaid,
-      isRecurrent: formData.isRecurrent,
-      recurrenceFrequency: formData.isRecurrent ? formData.recurrenceFrequency : 'NONE'
-    };
-    onSave(payload);
+    try {
+      const dateObj = new Date(formData.date + 'T00:00:00Z');
+      if (isNaN(dateObj.getTime())) {
+        alert("Data inválida.");
+        return;
+      }
+      const payload = {
+        description: formData.description,
+        amount: Number(formData.amount),
+        type: formData.type,
+        category: formData.category,
+        paymentMethod: formData.paymentMethod,
+        date: dateObj.toISOString(),
+        isPaid: formData.isPaid,
+        isRecurrent: formData.isRecurrent,
+        recurrenceFrequency: formData.isRecurrent ? formData.recurrenceFrequency : 'NONE'
+      };
+      onSave(payload);
+    } catch (err) {
+      alert("Erro ao preparar dados da transação.");
+    }
   };
 
   return (

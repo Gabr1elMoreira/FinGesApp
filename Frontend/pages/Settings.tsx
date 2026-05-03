@@ -20,9 +20,10 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
   // General State
   const [profileName, setProfileName] = useState(user.name);
   const [profileEmail, setProfileEmail] = useState(user.email);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success'>('idle');
+   const [password, setPassword] = useState('');
+   const [confirmPassword, setConfirmPassword] = useState('');
+   const [showPasswordFields, setShowPasswordFields] = useState(false);
+   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success'>('idle');
 
   // File Import Ref
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -108,6 +109,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
       setSaveStatus('success');
       setPassword('');
       setConfirmPassword('');
+      setShowPasswordFields(false);
       setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (err) {
       console.error("Erro ao atualizar perfil:", err);
@@ -203,8 +205,8 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 1024 * 1024) { // 1MB limit for Base64 (to avoid storage issues)
-      alert("A imagem é muito grande. Escolha uma foto de até 1MB.");
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit for Base64
+      alert("A imagem é muito grande. Escolha uma foto de até 5MB.");
       return;
     }
 
@@ -259,7 +261,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
         <TabButton id="general" label="Geral e Perfil" icon={UserIcon} />
         <TabButton id="preferences" label="Preferências" icon={Monitor} />
         <TabButton id="data" label="Dados e Backup" icon={Database} />
-        <TabButton id="danger" label="Zona de Perigo" icon={AlertCircle} />
+        <TabButton id="danger" label="Reset Total" icon={Trash2} />
       </div>
 
       {/* Content */}
@@ -279,7 +281,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                   {user.avatar ? (
                     <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
-                    <UserIcon size={40} className="text-slate-300" />
+                    <UserIcon size={40} className="text-black dark:text-white opacity-20" />
                   )}
                 </div>
                 <label className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
@@ -296,31 +298,54 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                   <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Nome</label>
                   <div className="relative">
                     <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black dark:text-white" />
-                    <input type="text" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-slate-400" value={profileName} onChange={(e) => setProfileName(e.target.value)} />
+                    <input type="text" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50" value={profileName} onChange={(e) => setProfileName(e.target.value)} />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Email</label>
                   <div className="relative">
                     <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black dark:text-white" />
-                    <input type="email" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-slate-400" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Nova Senha (Opcional)</label>
-                  <div className="relative">
-                    <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black dark:text-white" />
-                    <input type="password" placeholder="••••••" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-slate-400" value={password} onChange={(e) => setPassword(e.target.value)} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Confirmar Senha</label>
-                  <div className="relative">
-                    <ShieldCheck size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black dark:text-white" />
-                    <input type="password" placeholder="••••••" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-slate-400" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                    <input type="email" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} />
                   </div>
                 </div>
               </div>
+
+              {/* Password Toggle Button */}
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPasswordFields(!showPasswordFields);
+                    if (showPasswordFields) {
+                      setPassword('');
+                      setConfirmPassword('');
+                    }
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${showPasswordFields ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-900 text-black dark:text-white'}`}
+                >
+                  <Lock size={14} />
+                  {showPasswordFields ? 'Cancelar Alteração de Senha' : 'Alterar Senha de Acesso'}
+                </button>
+              </div>
+
+              {showPasswordFields && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 animate-in slide-in-from-top-2 duration-300">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Nova Senha</label>
+                    <div className="relative">
+                      <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black dark:text-white" />
+                      <input type="password" placeholder="••••••" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Confirmar Senha</label>
+                    <div className="relative">
+                      <ShieldCheck size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-black dark:text-white" />
+                      <input type="password" placeholder="••••••" className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none focus:ring-4 focus:ring-indigo-500/10 font-bold dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                    </div>
+                  </div>
+                </div>
+              )}
               <button type="submit" disabled={saveStatus === 'saving'} className="bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-indigo-700 shadow-xl shadow-indigo-600/20 active:scale-95 transition-all w-full md:w-auto">
                 {saveStatus === 'saving' ? 'Salvando...' : saveStatus === 'success' ? 'Salvo!' : 'Salvar Alterações'}
               </button>
@@ -360,7 +385,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
 
               <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-2xl">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white dark:bg-slate-800 rounded-xl text-slate-500">
+                  <div className="p-3 bg-white dark:bg-slate-800 rounded-xl text-black dark:text-white">
                     {user.settings.preferences?.privacyMode ? <EyeOff size={20} /> : <Eye size={20} />}
                   </div>
                   <div>
@@ -426,7 +451,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
         {activeTab === 'danger' && (
           <div className="bg-rose-50/80 dark:bg-rose-500/10 p-8 rounded-[32px] border-2 border-rose-200 dark:border-rose-500/30 space-y-8 animate-in fade-in duration-300 shadow-xl shadow-rose-500/5">
             <h3 className="text-lg font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
-              <AlertCircle size={20} /> Zona de Perigo
+              <Trash2 size={20} /> Reset Total
             </h3>
             <p className="text-black dark:text-white font-bold leading-relaxed">
               As ações abaixo são irreversíveis. Tenha certeza absoluta antes de prosseguir.

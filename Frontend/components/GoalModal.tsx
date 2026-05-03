@@ -155,7 +155,7 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onSave, initialD
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Prazo (Opcional)</label>
                             <div className="relative">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-black dark:text-white">
                                     <Calendar size={18} />
                                 </span>
                                 <input

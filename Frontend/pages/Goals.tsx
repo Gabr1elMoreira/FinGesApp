@@ -146,7 +146,7 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight leading-none">Minhas Metas</h2>
-                    <p className="text-slate-950 dark:text-white text-sm font-medium mt-1 leading-none">Gestão de orçamentos para <b>{monthName} {selectedYear}</b></p>
+                    <p className="text-black dark:text-white text-sm font-medium mt-1 leading-none">Gestão de orçamentos para <b>{monthName} {selectedYear}</b></p>
                 </div>
 
                 <button
@@ -163,7 +163,7 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
                         <Target size={48} className="text-violet-500" />
                     </div>
                     <h3 className="text-xl font-bold text-slate-950 dark:text-white mb-2">Nenhuma meta definida</h3>
-                    <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-8">Defina limites de gastos por categoria ou objetivos de poupança para ter maior controle financeiro.</p>
+                    <p className="text-black dark:text-white opacity-60 max-w-sm mb-8">Defina limites de gastos por categoria ou objetivos de poupança para ter maior controle financeiro.</p>
                     <button onClick={openNewGoalModal} className="text-violet-600 font-bold uppercase text-xs hover:underline">Criar minha primeira meta</button>
                 </div>
             ) : (

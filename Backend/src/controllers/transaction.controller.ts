@@ -99,8 +99,9 @@ export const createTransaction = async (req: AuthRequest, res: Response) => {
         });
 
         res.status(201).json(transaction);
-    } catch (error) {
-        res.status(400).json({ error: 'INVALID DATA' });
+    } catch (error: any) {
+        console.error("CREATE TRANSACTION ERROR:", error);
+        res.status(400).json({ error: 'INVALID DATA', details: error?.issues || error.message });
     }
 };
 
@@ -142,8 +143,9 @@ export const updateTransaction = async (req: AuthRequest, res: Response) => {
         });
 
         res.json(updated);
-    } catch (error) {
-        res.status(400).json({ error: 'UPDATE FAILED' });
+    } catch (error: any) {
+        console.error("UPDATE TRANSACTION ERROR:", error);
+        res.status(400).json({ error: 'UPDATE FAILED', details: error?.issues || error.message });
     }
 };
 

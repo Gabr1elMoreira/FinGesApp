@@ -11,6 +11,11 @@ import Goals from './pages/Goals';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import MonthYearPicker from './components/MonthYearPicker';
+import AdminPanel from './pages/AdminPanel';
+import SystemAlert from './components/SystemAlert';
+import { supabase } from './services/supabase';
+
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -22,6 +27,7 @@ const App: React.FC = () => {
 
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [globalNotification, setGlobalNotification] = useState<any>(null);
 
   // Aplicar tema e persistir
   useEffect(() => {
@@ -29,6 +35,23 @@ const App: React.FC = () => {
     else document.documentElement.classList.remove('dark');
     storageService.setTheme(theme);
   }, [theme]);
+
+  // Supabase Realtime Listener (Broadcast)
+  useEffect(() => {
+    const channel = supabase
+      .channel('public_system_notifications')
+      .on('postgres_changes', 
+        { event: 'INSERT', schema: 'public', table: 'SystemBroadcast' }, 
+        (payload) => {
+          setGlobalNotification(payload.new);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   // Inicialização Robusta via API
   useEffect(() => {
@@ -45,6 +68,8 @@ const App: React.FC = () => {
           setUser(activeUser);
           setTransactions(allTransactions);
           setIsLoggedIn(true);
+          // Verifica se há novas notificações não lidas ao iniciar
+          checkLatestBroadcast();
         }
       } catch (err) {
         console.error("Erro ao carregar dados da API:", err);
@@ -56,9 +81,26 @@ const App: React.FC = () => {
     init();
   }, []);
 
+  const checkLatestBroadcast = async () => {
+    try {
+      const latest = await apiRequest('/admin/latest-broadcast');
+      if (latest && latest.id) {
+        const seenId = localStorage.getItem('last_seen_broadcast_id');
+        if (seenId !== latest.id) {
+          setGlobalNotification(latest);
+          localStorage.setItem('last_seen_broadcast_id', latest.id);
+        }
+      }
+    } catch (err) {
+      console.error("Erro ao buscar broadcast persistente:", err);
+    }
+  };
+
   const handleLogin = async (validatedUser: User) => {
     setUser(validatedUser);
     setIsLoggedIn(true);
+    // Busca a última notificação ao logar
+    checkLatestBroadcast();
     // Carrega as transações do usuário que acabou de logar
     try {
       const txs = await apiRequest('/transactions');
@@ -84,27 +126,44 @@ const App: React.FC = () => {
   };
 
   const handleAddTransaction = async (newTx: any) => {
-    const created = await apiRequest('/transactions', {
-      method: 'POST',
-      body: JSON.stringify(newTx)
-    });
-    setTransactions(prev => [created, ...prev]);
+    try {
+      await apiRequest('/transactions', {
+        method: 'POST',
+        body: JSON.stringify(newTx)
+      });
+      // Re-busca todas as transações para garantir sincronia total e ordenação correta do backend
+      const allTxs = await apiRequest('/transactions');
+      setTransactions(allTxs);
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
   const handleUpdateTransaction = async (id: string, updates: any) => {
-    await apiRequest(`/transactions/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(updates)
-    });
-    const txs = await apiRequest('/transactions');
-    setTransactions(txs);
+    try {
+      await apiRequest(`/transactions/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(updates)
+      });
+      const txs = await apiRequest('/transactions');
+      setTransactions(txs);
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
   const handleDeleteTransaction = async (id: string) => {
-    await apiRequest(`/transactions/${id}`, {
-      method: 'DELETE'
-    });
-    setTransactions(prev => prev.filter(t => t.id !== id));
+    try {
+      await apiRequest(`/transactions/${id}`, {
+        method: 'DELETE'
+      });
+      setTransactions(prev => prev.filter(t => t.id !== id));
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
   const filteredTransactions = useMemo(() => {
@@ -171,7 +230,16 @@ const App: React.FC = () => {
       {currentPage === 'reports' && <Reports transactions={filteredTransactions} theme={theme} selectedMonth={selectedMonth} selectedYear={selectedYear} />}
       {currentPage === 'goals' && <Goals transactions={transactions} user={user!} theme={theme} selectedMonth={selectedMonth} selectedYear={selectedYear} />}
       {currentPage === 'settings' && <Settings user={user!} setUser={setUser} theme={theme} setTheme={setTheme} />}
+      {currentPage === 'admin' && <AdminPanel />}
+
+      {globalNotification && (
+        <SystemAlert 
+          notification={globalNotification} 
+          onClose={() => setGlobalNotification(null)} 
+        />
+      )}
     </Layout>
+
   );
 };
 

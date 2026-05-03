@@ -25,6 +25,7 @@ export interface User {
   name: string;
   avatar: string;
   email: string;
+  role?: 'USER' | 'ADMIN';
   password?: string;
   settings: {
     enabledCategories: Category[];

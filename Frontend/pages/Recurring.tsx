@@ -6,8 +6,8 @@ import PrivacyValue from '../components/PrivacyValue';
 
 interface RecurringProps {
   transactions: Transaction[];
-  onAdd: (t: Omit<Transaction, 'id'>) => void;
-  onUpdate: (id: string, updates: Partial<Transaction>) => void;
+  onAdd: (t: Omit<Transaction, 'id'>) => Promise<void>;
+  onUpdate: (id: string, updates: Partial<Transaction>) => Promise<void>;
   theme: Theme;
   selectedMonth: number;
   selectedYear: number;
@@ -29,7 +29,9 @@ const Recurring: React.FC<RecurringProps> = ({
 
   const monthlyStatus = useMemo(() => {
     const templates = recurringService.getRecurringTemplates(transactions);
-    return recurringService.getMonthlyProjection(templates, transactions, selectedMonth, selectedYear);
+    const projection = recurringService.getMonthlyProjection(templates, transactions, selectedMonth, selectedYear);
+    // Filtra para exibir apenas saídas (Expenses) na aba de Contas
+    return projection.filter(t => t.type === 'EXPENSE');
   }, [transactions, selectedMonth, selectedYear]);
 
   const stats = useMemo(() => recurringService.calculateStats(monthlyStatus), [monthlyStatus]);
@@ -40,25 +42,29 @@ const Recurring: React.FC<RecurringProps> = ({
     return monthlyStatus.filter(b => !b.isPaid);
   }, [monthlyStatus, activeTab]);
 
-  const handleConfirmPayment = (bill: ProjectedBill) => {
-    if (bill.id && !bill.id.startsWith('temp-')) {
-      onUpdate(bill.id, { isPaid: true });
-    } else {
-      const originalDay = new Date(bill.date).getUTCDate();
-      const newDate = new Date(Date.UTC(selectedYear, selectedMonth, originalDay)).toISOString();
+  const handleConfirmPayment = async (bill: ProjectedBill) => {
+    try {
+      if (bill.id && !bill.id.startsWith('temp-')) {
+        await onUpdate(bill.id, { isPaid: true });
+      } else {
+        const originalDay = new Date(bill.date).getUTCDate();
+        const newDate = new Date(Date.UTC(selectedYear, selectedMonth, originalDay)).toISOString();
 
-      onAdd({
-        description: bill.description,
-        amount: bill.amount,
-        type: bill.type,
-        category: bill.category,
-        paymentMethod: bill.paymentMethod || 'Dinheiro',
-        date: newDate.split('T')[0],
-        isPaid: true,
-        isRecurrent: true,
-        recurrenceFrequency: bill.recurrenceFrequency,
-        userId: user.id
-      });
+        await onAdd({
+          description: bill.description,
+          amount: bill.amount,
+          type: bill.type,
+          category: bill.category,
+          paymentMethod: bill.paymentMethod || 'Dinheiro',
+          date: newDate.split('T')[0],
+          isPaid: true,
+          isRecurrent: true,
+          recurrenceFrequency: bill.recurrenceFrequency,
+          userId: user.id
+        });
+      }
+    } catch (err: any) {
+      alert("Erro ao confirmar pagamento: " + (err.message || "Verifique os dados da transação."));
     }
   };
 
@@ -73,8 +79,8 @@ const Recurring: React.FC<RecurringProps> = ({
     <div className="space-y-8 animate-in fade-in duration-700 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight leading-none">Contas Recorrentes</h2>
-          <p className="text-black dark:text-white text-sm font-medium mt-1 leading-none">Visualizando compromissos de <b>{monthName} {selectedYear}</b></p>
+          <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight leading-none">Contas e Despesas</h2>
+          <p className="text-black dark:text-white text-sm font-medium mt-1 leading-none">Gerencie seus compromissos de <b>{monthName} {selectedYear}</b></p>
         </div>
       </div>
 
@@ -237,10 +243,10 @@ const Recurring: React.FC<RecurringProps> = ({
           <Zap size={120} />
         </div>
         <div className="relative z-10">
-          <h4 className="text-white font-black uppercase tracking-[0.2em] text-[10px] mb-4 leading-none">Inteligência Preditiva</h4>
-          <h3 className="text-xl font-bold leading-tight mb-2">Lançamento Automático Inteligente</h3>
+          <h4 className="text-white font-black uppercase tracking-[0.2em] text-[10px] mb-4 leading-none">Inteligência Financeira</h4>
+          <h3 className="text-xl font-bold leading-tight mb-2">Controle Total de Saídas</h3>
           <p className="text-white text-xs font-medium max-w-lg leading-relaxed">
-            O Finanza projeta suas despesas recorrentes baseando-se no seu padrão histórico. Use os filtros para navegar entre <b>Pendentes</b> e <b>Pagas</b>, e clique nos botões de ação para liquidar seus compromissos.
+            Aqui você visualiza todas as suas despesas do mês, sejam elas fixas (recorrentes) ou avulsas. Use os filtros para gerenciar o que já foi <b>Pago</b> e o que ainda está <b>Pendente</b>.
           </p>
         </div>
       </div>

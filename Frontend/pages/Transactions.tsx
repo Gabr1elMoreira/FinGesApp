@@ -6,9 +6,9 @@ import PrivacyValue from '../components/PrivacyValue';
 
 interface TransactionsProps {
   transactions: Transaction[];
-  onAdd: (t: Omit<Transaction, 'id'>) => void;
-  onUpdate: (id: string, updates: Partial<Transaction>) => void;
-  onDelete: (id: string) => void;
+  onAdd: (t: Omit<Transaction, 'id'>) => Promise<void>;
+  onUpdate: (id: string, updates: Partial<Transaction>) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
   user: User;
   theme: Theme;
 }
@@ -21,13 +21,17 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
   const filtered = transactions.filter(t => t.description.toLowerCase().includes(filter.toLowerCase()));
 
-  const handleSave = (formData: Omit<Transaction, 'id'>) => {
-    if (modalState.data) {
-      onUpdate(modalState.data.id, formData);
-    } else {
-      onAdd({ ...formData, userId: user.id });
+  const handleSave = async (formData: Omit<Transaction, 'id'>) => {
+    try {
+      if (modalState.data) {
+        await onUpdate(modalState.data.id, formData);
+      } else {
+        await onAdd({ ...formData, userId: user.id });
+      }
+      setModalState({ open: false, data: null });
+    } catch (err: any) {
+      alert("Erro ao salvar transação: " + (err.message || "Verifique os dados informados."));
     }
-    setModalState({ open: false, data: null });
   };
 
   const getMethodIcon = (method: string) => {

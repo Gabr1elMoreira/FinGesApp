@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  finges-db:
+    image: postgres:15-alpine
+    container_name: finges_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: finanza
+      POSTGRES_PASSWORD: finanza
+      POSTGRES_DB: finanza
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - finges-network
+
+networks:
+  finges-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

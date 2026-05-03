@@ -7,16 +7,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
-  id                String        @id @default(uuid())
-  email             String        @unique
+  id                String          @id @default(uuid())
+  email             String          @unique
   password          String
   name              String
   avatar            String?
-  theme             String        @default("dark")
+  role              Role            @default(USER)
+  lastLoginAt       DateTime?
+  theme             String          @default("dark")
   enabledCategories String[]
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  monthlyReports    MonthlyReport[]
   transactions      Transaction[]
 }
 
@@ -38,3 +46,41 @@ model Transaction {
 
   @@index([userId])
 }
+
+enum ReportVerdict {
+  EXCELLENT
+  STABLE
+  CRITICAL
+}
+
+model MonthlyReport {
+  id        String        @id @default(uuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  month     Int
+  year      Int
+  verdict   ReportVerdict
+  summary   String        @db.Text
+  insights  Json // Lista de insights [string]
+  tip       String        @db.Text
+  createdAt DateTime      @default(now())
+
+  @@unique([userId, month, year])
+}
+
+model SystemBroadcast {
+  id        String   @id @default(uuid())
+  title     String
+  message   String   @db.Text
+  type      String   @default("broadcast")
+  createdAt DateTime @default(now())
+  active    Boolean  @default(true)
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  message   String
+  type      String   @default("info")
+  createdAt DateTime @default(now())
+}
+

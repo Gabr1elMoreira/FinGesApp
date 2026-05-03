@@ -1,4 +1,4 @@
-const API_URL = "https://fingesapp-backend.vercel.app";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 export async function apiRequest(path: string, options: RequestInit = {}) {
     const token = localStorage.getItem("finanza_token");
@@ -28,7 +28,8 @@ export async function apiRequest(path: string, options: RequestInit = {}) {
         const data = await response.json().catch(() => null);
 
         if (!response.ok) {
-            const errorMessage = data?.error || "Erro na API";
+            const detailStr = data?.details ? JSON.stringify(data.details) : "";
+            const errorMessage = data?.error ? `${data.error} ${detailStr}` : "Erro na API";
             const error: any = new Error(errorMessage);
             error.status = response.status;
             throw error;
@@ -36,8 +37,13 @@ export async function apiRequest(path: string, options: RequestInit = {}) {
 
         return data;
     } catch (err: any) {
+        // Se o erro já tem status, é um erro da API que nós lançamos acima
+        if (err.status) {
+            throw err;
+        }
+
         // Se cair aqui, é erro de rede ou DNS
         console.error("ERRO DE CONEXÃO:", err.message);
-        throw new Error("Não foi possível conectar ao servidor. Verifique sua internet.");
+        throw new Error(`Servidor inacessível (${url}). Certifique-se de que o Backend está rodando e o endereço está correto.`);
     }
 }

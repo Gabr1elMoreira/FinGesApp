@@ -87,6 +87,12 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ error: 'E-MAIL OU SENHA INCORRETOS' });
         }
 
+        // Atualiza o último login
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() }
+        });
+
         const token = generateToken(user.id);
 
         res.json({
@@ -96,6 +102,7 @@ export const login = async (req: Request, res: Response) => {
                 name: user.name,
                 email: user.email,
                 avatar: user.avatar || '',
+                role: user.role, // Retorna a ROLE para o frontend saber
                 settings: {
                     enabledCategories: user.enabledCategories
                 }

@@ -95,19 +95,19 @@ export const recurringService = {
       };
     }).filter((b): b is ProjectedBill => b !== null);
 
-    // Adiciona transações avulsas PENDENTES desse mês que não bateram com templates
-    const manualPending = transactions
+    // Adiciona transações avulsas (não recorrentes) desse mês que não bateram com templates
+    const manualOthers = transactions
       .filter(t => {
         const d = new Date(t.date);
         const isThisMonth = d.getUTCMonth() === month && d.getUTCFullYear() === year;
-        return isThisMonth && !consumedIds.has(t.id) && !t.isPaid;
+        return isThisMonth && !consumedIds.has(t.id);
       })
       .map(t => ({
         ...t,
-        isPaid: false
+        isPaid: !!t.isPaid
       }));
 
-    const allBills = [...projections, ...manualPending];
+    const allBills = [...projections, ...manualOthers];
 
     // Ordenação final por dia
     return allBills.sort((a, b) => new Date(a.date).getUTCDate() - new Date(b.date).getUTCDate());

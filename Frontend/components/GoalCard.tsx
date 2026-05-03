@@ -58,10 +58,10 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
                         <PlusCircle size={14} />
                     </button>
                 )}
-                <button onClick={() => onEdit(goal)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-500 hover:text-indigo-600 transition-colors">
+                <button onClick={() => onEdit(goal)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-black dark:text-white hover:text-indigo-600 transition-colors">
                     <Edit2 size={14} />
                 </button>
-                <button onClick={() => onDelete(goal.id)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-slate-500 hover:text-rose-600 transition-colors">
+                <button onClick={() => onDelete(goal.id)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl text-black dark:text-white hover:text-rose-600 transition-colors">
                     <Trash2 size={14} />
                 </button>
             </div>
@@ -96,7 +96,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
                 </div>
 
                 {goal.deadline && (
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-black dark:text-white opacity-60 uppercase tracking-wider mb-2">
                         <Calendar size={12} className="text-violet-500" />
                         <span>Prazo: {new Date(goal.deadline).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</span>
                     </div>
