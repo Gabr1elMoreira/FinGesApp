@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_BASE_URL || "https://fingesapp-backend.vercel.app";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "https://finges-backend.vercel.app";
 
 export async function apiRequest(path: string, options: RequestInit = {}) {
     const token = localStorage.getItem("finanza_token");
