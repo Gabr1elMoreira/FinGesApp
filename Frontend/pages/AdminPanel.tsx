@@ -21,7 +21,7 @@ interface UserWithLogin extends User {
 
 type AdminTab = 'overview' | 'users' | 'system' | 'global_intel';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "https://finges-backend.vercel.app";
 
 const AdminPanel: React.FC = () => {
     const [stats, setStats] = useState<AdminStats | null>(null);

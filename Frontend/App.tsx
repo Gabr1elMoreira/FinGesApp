@@ -15,7 +15,7 @@ import AdminPanel from './pages/AdminPanel';
 import SystemAlert from './components/SystemAlert';
 import { supabase } from './services/supabase';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "https://finges-backend.vercel.app";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
