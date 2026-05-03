@@ -5,7 +5,7 @@ import { storageService } from "./storage";
 export const aiService = {
   generateFinancialAdvice: async (query: string, transactions: Transaction[], user: User, month: number, year: number) => {
     // @ts-ignore
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || import.meta.env.VITE_API_KEY || "dummy" });
+    const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || "dummy" });
 
     const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const currentMonthLabel = monthNames[month] + " " + year;
