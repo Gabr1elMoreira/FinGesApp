@@ -48,23 +48,33 @@ export const aiService = {
       return true;
     });
 
+    // Agregando dados inteligentes para precisão sem travar o navegador
+    const income = currentMonthTxs.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0);
+    const expense = currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
+    
+    // Top 30 maiores gastos para saber "Qual foi o maior gasto"
+    const topTransactions = [...currentMonthTxs]
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 30)
+      .map(t => `${t.description}: R$ ${t.amount} (${t.category})`);
+
+    // Resumo de Métodos de Pagamento
+    const methodMap = new Map<string, number>();
+    currentMonthTxs.forEach(t => {
+      methodMap.set(t.paymentMethod, (methodMap.get(t.paymentMethod) || 0) + 1);
+    });
+    const topMethods = Array.from(methodMap.entries()).map(([m, count]) => `${m}: ${count}x`);
+
     const contextData = {
-      mesReferencia: currentMonthLabel,
-      mesEmAndamento: isCurrentMonth,
-      transacoesMesAtual: currentMonthTxs.map(formatTx),
-      historicoRecente: otherTxs.slice(0, 20).map(formatTx),
-      resumoCategoriasMesAtual: categorySummary,
-      mediasHistoricasMensais: { despesas: historicalExpense, receitas: historicalIncome },
-      metasGlobais: activeGoals.map(g => ({ descricao: g.description, alvo: g.targetAmount, tipo: g.type, categoria: g.category })),
-      saldoMesAtual: currentMonthTxs.reduce((acc, t) => t.type === 'INCOME' ? acc + t.amount : acc - t.amount, 0)
+      mes: currentMonthLabel,
+      totalReceita: income,
+      totalDespesa: expense,
+      maioresGastos: topTransactions,
+      frequenciaMetodos: topMethods,
+      metasAtivas: activeGoals.map(g => g.description)
     };
 
-    const systemInstruction = "Você é o FinGes AI, assistente financeiro de " + user.name + ".\n\n" +
-      "REGRAS DE FORMATAÇÃO (OBRIGATÓRIO):\n" +
-      "1. LIMPEZA: Evite o uso excessivo de negritos (***) ou muitos títulos (###). Use Markdown limpo.\n" +
-      "2. ESPAÇAMENTO: Use SEMPRE duas quebras de linha (\\n\\n) entre cada parágrafo ou assunto.\n\n" +
-      "DADOS PARA ANÁLISE:\n" + JSON.stringify(contextData) + "\n\n" +
-      "Responda de forma estratégica e concisa sobre " + currentMonthLabel + ". Ao final, adicione SUGESTÕES de perguntas em uma lista marcada com [SUGESTOES].";
+    const systemInstruction = "Você é o FinGes AI de " + user.name + ". Responda de forma estratégica, limpa (sem poluição de negritos) e com espaçamento duplo. Analise os dados fornecidos para responder perguntas sobre maiores gastos, métodos mais usados e metas. Dados: " + JSON.stringify(contextData);
 
     try {
       const response = await ai.models.generateContent({
@@ -76,11 +86,14 @@ export const aiService = {
         },
       });
 
-      return response.text || "Não consegui processar sua análise agora.";
+      return response.text || "Não consegui processar agora.";
     } catch (error) {
       console.error("AI Error:", error);
       return "Estou temporariamente indisponível.";
     }
+
+
+
   },
 
 
