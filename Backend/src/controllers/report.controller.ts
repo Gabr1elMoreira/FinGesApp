@@ -32,11 +32,18 @@ export const getMonthlyReport = async (req: AuthRequest, res: Response) => {
         }
 
         const isManualRequest = req.query.force === 'true';
-        const isLastDayOfMonth = now.getDate() === new Date(currentYear, currentMonth, 0).getDate();
+        const isMonthOver = (year < currentYear) || (year === currentYear && month < currentMonth);
+        const isLastDayOfMonth = now.getUTCDate() === new Date(Date.UTC(year, month, 0)).getUTCDate();
+        
+        // Gera automaticamente apenas se o mês já acabou ou se é o último dia. 
+        // Caso contrário, exige o clique manual (force).
+        const shouldAutoGenerate = isMonthOver || (isCurrentMonth && isLastDayOfMonth);
 
-        if (isCurrentMonth && !isLastDayOfMonth && !isManualRequest) {
-            return res.status(404).json({ error: "Relatório não disponível ainda." });
+        if (!isManualRequest && !shouldAutoGenerate) {
+            return res.status(404).json({ error: "Análise inteligente disponível sob demanda ou ao final do mês." });
         }
+
+
 
         // 2. Definir intervalo exato do mês (Do primeiro ao último segundo)
         const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0));
