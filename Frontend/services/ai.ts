@@ -7,7 +7,6 @@ export const aiService = {
     // @ts-ignore
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || import.meta.env.VITE_API_KEY || "dummy" });
 
-
     const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const currentMonthLabel = monthNames[month] + " " + year;
     const isCurrentMonth = new Date().getMonth() === month && new Date().getFullYear() === year;
@@ -40,41 +39,30 @@ export const aiService = {
     const historicalExpense = otherTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0) / pastMonthsCount;
     const historicalIncome = otherTxs.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0) / pastMonthsCount;
 
-    const activeGoals = goals.filter(g => {
-      if (!g.deadline) return true;
-      const d = new Date(g.deadline);
-      if (d.getUTCFullYear() < year) return false;
-      if (d.getUTCFullYear() === year && d.getUTCMonth() < month) return false;
-      return true;
-    });
-
-    // Agregando dados inteligentes para precisão sem travar o navegador
-    const income = currentMonthTxs.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0);
-    const expense = currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
-    
-    // Top 30 maiores gastos para saber "Qual foi o maior gasto"
-    const topTransactions = [...currentMonthTxs]
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 30)
-      .map(t => `${t.description}: R$ ${t.amount} (${t.category})`);
-
-    // Resumo de Métodos de Pagamento
-    const methodMap = new Map<string, number>();
-    currentMonthTxs.forEach(t => {
-      methodMap.set(t.paymentMethod, (methodMap.get(t.paymentMethod) || 0) + 1);
-    });
-    const topMethods = Array.from(methodMap.entries()).map(([m, count]) => `${m}: ${count}x`);
+    const goals = storageService.getGoals(user.id);
 
     const contextData = {
-      mes: currentMonthLabel,
-      totalReceita: income,
-      totalDespesa: expense,
-      maioresGastos: topTransactions,
-      frequenciaMetodos: topMethods,
-      metasAtivas: activeGoals.map(g => g.description)
+      mesReferencia: currentMonthLabel,
+      mesEmAndamento: isCurrentMonth,
+      transacoesMesAtual: currentMonthTxs.map(formatTx),
+      historicoRecente: otherTxs.slice(0, 20).map(formatTx),
+      resumoCategoriasMesAtual: categorySummary,
+      mediasHistoricasMensais: {
+        despesas: historicalExpense,
+        receitas: historicalIncome
+      },
+      metasGlobais: goals.map(g => ({
+        descricao: g.description,
+        alvo: g.targetAmount,
+        tipo: g.type,
+        progressoAtual: g.currentAmount || 0,
+        categoria: g.category
+      })),
+      saldoMesAtual: currentMonthTxs.reduce((acc, t) => t.type === 'INCOME' ? acc + t.amount : acc - t.amount, 0),
+      totalGastosMesAtual: currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0)
     };
 
-    const systemInstruction = "Você é o FinGes AI de " + user.name + ". Responda de forma estratégica, limpa (sem poluição de negritos) e com espaçamento duplo. Analise os dados fornecidos para responder perguntas sobre maiores gastos, métodos mais usados e metas. Dados: " + JSON.stringify(contextData);
+    const systemInstruction = "Você é o FinGes AI, assistente financeiro avançado e proativo de " + user.name + ".\nCONTEXTO ATUAL: O usuário visualiza os dados de " + currentMonthLabel + ". O mês está " + (isCurrentMonth ? "em andamento" : "fechado") + ".\n\nDADOS PARA ANÁLISE:\n" + JSON.stringify(contextData) + "\n\nREGRAS DE CONDUTA DA IA:\n1. PROATIVIDADE E PREVISÃO: Como o mês está " + (isCurrentMonth ? "ativo, projete os gastos até o fim do mês usando a média histórica e os gastos atuais" : "fechado, analise o resultado final") + ". Mostre previsões de saldo se o comportamento atual continuar.\n2. INTEGRAÇÃO COM METAS: Avalie rigorosamente como os gastos atuais afetam as metasGlobais. Dê alertas se limites estiverem sendo quebrados ou celebre se a meta de economia estiver alcançável.\n3. EXPLICABILIDADE: Ao fazer afirmações, justifique comparando com o histórico (mediasHistoricasMensais) ou citando resumoCategoriasMesAtual. Não apenas jogue o número solto.\n4. FOCO TEMPORAL: Responda sobre " + currentMonthLabel + " por padrão, a menos que uma comparação ampla seja pedida.\n5. RESPOSTA DIRETA: Formatação limpa em Markdown. Seja analítico, estratégico e conciso. Não encha linguiça. Use valores monetários formatados (R$ 0,00).\n\nSUGESTÕES DINÂMICAS:\nAo final da resposta, adicione SEMPRE dicas do que perguntar a seguir no formato:\n[SUGESTOES]\nPergunta proativa sobre previsões\nPergunta sobre metas\nPergunta sobre onde economizar mais";
 
     try {
       const response = await ai.models.generateContent({
@@ -86,16 +74,12 @@ export const aiService = {
         },
       });
 
-      return response.text || "Não consegui processar agora.";
+      return response.text || "Não consegui processar suas projeções e análises agora.";
     } catch (error) {
       console.error("AI Error:", error);
-      return "Estou temporariamente indisponível.";
+      return "Estou temporariamente indisponível. Verifique sua chave de conexão.";
     }
-
-
-
   },
-
 
   generateProactiveAlerts: async (transactions: Transaction[], user: User): Promise<string[]> => {
     const alerts: string[] = [];
@@ -110,18 +94,8 @@ export const aiService = {
 
     const expenses = currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
     const goals = storageService.getGoals(user.id);
-    const activeGoals = goals.filter(g => {
-      if (!g.deadline) return true;
-      const deadlineDate = new Date(g.deadline);
-      const deadlineMonth = deadlineDate.getUTCMonth();
-      const deadlineYear = deadlineDate.getUTCFullYear();
-      
-      if (deadlineYear < year) return false;
-      if (deadlineYear === year && deadlineMonth < month) return false;
-      return true;
-    });
 
-    activeGoals.filter(g => g.type === 'SPENDING_LIMIT').forEach(g => {
+    goals.filter(g => g.type === 'SPENDING_LIMIT').forEach(g => {
       let specificExpenses = expenses;
       if (g.category) {
         specificExpenses = currentMonthTxs.filter(t => t.type === 'EXPENSE' && t.category === g.category).reduce((acc, t) => acc + t.amount, 0);
@@ -133,7 +107,6 @@ export const aiService = {
         alerts.push("[ATENÇÃO] Você já gastou " + ((specificExpenses / g.targetAmount) * 100).toFixed(0) + "% do seu limite para '" + g.description + "'.");
       }
     });
-
 
     return alerts;
   }
