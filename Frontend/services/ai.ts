@@ -42,13 +42,9 @@ export const aiService = {
 
     const activeGoals = goals.filter(g => {
       if (!g.deadline) return true;
-      const deadlineDate = new Date(g.deadline);
-      // Uma meta só é relevante se o prazo não expirou antes do mês de análise
-      const deadlineMonth = deadlineDate.getUTCMonth();
-      const deadlineYear = deadlineDate.getUTCFullYear();
-      
-      if (deadlineYear < year) return false;
-      if (deadlineYear === year && deadlineMonth < month) return false;
+      const d = new Date(g.deadline);
+      if (d.getUTCFullYear() < year) return false;
+      if (d.getUTCFullYear() === year && d.getUTCMonth() < month) return false;
       return true;
     });
 
@@ -58,40 +54,17 @@ export const aiService = {
       transacoesMesAtual: currentMonthTxs.map(formatTx),
       historicoRecente: otherTxs.slice(0, 20).map(formatTx),
       resumoCategoriasMesAtual: categorySummary,
-      mediasHistoricasMensais: {
-        despesas: historicalExpense,
-        receitas: historicalIncome
-      },
-      metasGlobais: activeGoals.map(g => ({
-        descricao: g.description,
-        alvo: g.targetAmount,
-        tipo: g.type,
-        progressoAtual: g.currentAmount || 0,
-        categoria: g.category
-      })),
-
-      saldoMesAtual: currentMonthTxs.reduce((acc, t) => t.type === 'INCOME' ? acc + t.amount : acc - t.amount, 0),
-      totalGastosMesAtual: currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0)
+      mediasHistoricasMensais: { despesas: historicalExpense, receitas: historicalIncome },
+      metasGlobais: activeGoals.map(g => ({ descricao: g.description, alvo: g.targetAmount, tipo: g.type, categoria: g.category })),
+      saldoMesAtual: currentMonthTxs.reduce((acc, t) => t.type === 'INCOME' ? acc + t.amount : acc - t.amount, 0)
     };
 
-    const systemInstruction = `Você é o FinGes AI, assistente financeiro avançado e proativo de ${user.name}.
-CONTEXTO: Visualizando ${currentMonthLabel} (${isCurrentMonth ? "em andamento" : "fechado"}).
-
-REGRAS DE FORMATAÇÃO (OBRIGATÓRIO):
-1. LIMPEZA TOTAL: Nunca use negritos excessivos (***) ou muitos títulos (###). Mantenha o texto sóbrio e elegante.
-2. ESPAÇAMENTO DUPLO: Use SEMPRE duas quebras de linha (\n\n) entre cada parágrafo, tópico ou sugestão. O texto deve "respirar".
-
-REGRAS DE INTELIGÊNCIA:
-1. PROATIVIDADE: Como o mês está ${isCurrentMonth ? "ativo, projete os gastos até o fim do mês usando as médias históricas" : "fechado, faça uma análise crítica do resultado"}.
-2. METAS: Relacione os gastos atuais com as metasGlobais. Seja incisivo se uma meta estiver em risco.
-3. EXPLICABILIDADE: Justifique suas análises citando os valores de categorias ou médias enviadas.
-
-DADOS PARA ANÁLISE:
-${JSON.stringify(contextData)}
-
-Ao final, adicione SUGESTÕES de perguntas úteis marcadas com [SUGESTOES].`;
-
-
+    const systemInstruction = "Você é o FinGes AI, assistente financeiro de " + user.name + ".\n\n" +
+      "REGRAS DE FORMATAÇÃO (OBRIGATÓRIO):\n" +
+      "1. LIMPEZA: Evite o uso excessivo de negritos (***) ou muitos títulos (###). Use Markdown limpo.\n" +
+      "2. ESPAÇAMENTO: Use SEMPRE duas quebras de linha (\\n\\n) entre cada parágrafo ou assunto.\n\n" +
+      "DADOS PARA ANÁLISE:\n" + JSON.stringify(contextData) + "\n\n" +
+      "Responda de forma estratégica e concisa sobre " + currentMonthLabel + ". Ao final, adicione SUGESTÕES de perguntas em uma lista marcada com [SUGESTOES].";
 
     try {
       const response = await ai.models.generateContent({
@@ -103,14 +76,13 @@ Ao final, adicione SUGESTÕES de perguntas úteis marcadas com [SUGESTOES].`;
         },
       });
 
-
-
-      return response.text || "Não consegui processar suas projeções e análises agora.";
+      return response.text || "Não consegui processar sua análise agora.";
     } catch (error) {
       console.error("AI Error:", error);
-      return "Estou temporariamente indisponível. Verifique sua chave de conexão.";
+      return "Estou temporariamente indisponível.";
     }
   },
+
 
   generateProactiveAlerts: async (transactions: Transaction[], user: User): Promise<string[]> => {
     const alerts: string[] = [];
