@@ -5,7 +5,8 @@ import { storageService } from "./storage";
 export const aiService = {
   generateFinancialAdvice: async (query: string, transactions: Transaction[], user: User, month: number, year: number) => {
     // @ts-ignore
-    const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || "dummy" });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || import.meta.env.VITE_API_KEY || "dummy" });
+
 
     const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
     const currentMonthLabel = monthNames[month] + " " + year;
@@ -101,6 +102,8 @@ Ao final, adicione SUGESTÕES de perguntas úteis marcadas com [SUGESTOES].`;
           temperature: 0.3,
         },
       });
+
+
 
       return response.text || "Não consegui processar suas projeções e análises agora.";
     } catch (error) {
