@@ -32,16 +32,28 @@ export const getMonthlyReport = async (req: AuthRequest, res: Response) => {
         }
 
         const isManualRequest = req.query.force === 'true';
-        const isMonthOver = (year < currentYear) || (year === currentYear && month < currentMonth);
-        const isLastDayOfMonth = now.getUTCDate() === new Date(Date.UTC(year, month, 0)).getUTCDate();
         
-        // Gera automaticamente apenas se o mês já acabou ou se é o último dia. 
-        // Caso contrário, exige o clique manual (force).
-        const shouldAutoGenerate = isMonthOver || (isCurrentMonth && isLastDayOfMonth);
+        // Verifica se é o mês atual
+        const isCurrentMonth = (month === currentMonth && year === currentYear);
+        
+        // Verifica se o mês já passou completamente
+        const isPastMonth = (year < currentYear) || (year === currentYear && month < currentMonth);
+        
+        // Verifica se hoje é o último dia do mês (usando UTC para consistência)
+        const lastDayOfSelectedMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+        const isLastDay = now.getUTCDate() === lastDayOfSelectedMonth;
 
-        if (!isManualRequest && !shouldAutoGenerate) {
-            return res.status(404).json({ error: "Análise inteligente disponível sob demanda ou ao final do mês." });
+        // Se o relatório não existe, só geramos se:
+        // 1. For um pedido manual (botão)
+        // 2. For um mês que já terminou
+        // 3. For o último dia do mês atual
+        const shouldGenerate = isManualRequest || isPastMonth || (isCurrentMonth && isLastDay);
+
+        if (!existingReport && !shouldGenerate) {
+            return res.status(404).json({ error: "Relatório disponível automaticamente apenas ao final do mês ou via solicitação manual." });
         }
+
+
 
 
 
