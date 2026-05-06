@@ -17,9 +17,16 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ transactions, allTransactions, user, theme, selectedMonth, selectedYear }) => {
   const stats = useMemo(() => {
-    const income = transactions.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0);
-    const expenses = transactions.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
-    return { income, expenses, balance: income - expenses };
+    const paidIncome = transactions.filter(t => t.type === 'INCOME' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+    const paidExpenses = transactions.filter(t => t.type === 'EXPENSE' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+    const pendingExpenses = transactions.filter(t => t.type === 'EXPENSE' && !t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+    
+    return { 
+      income: paidIncome, 
+      expenses: paidExpenses, 
+      balance: paidIncome - paidExpenses,
+      pending: pendingExpenses 
+    };
   }, [transactions]);
 
   const privacyMode = user.settings.preferences?.privacyMode || false;
@@ -45,7 +52,7 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, allTransactions, us
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 pb-10 uppercase">
       {/* Cards de Resumo */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard
           title="Saldo em Conta"
           value={stats.balance}
@@ -65,6 +72,13 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, allTransactions, us
           value={stats.expenses}
           icon={<TrendingDown size={26} className="text-rose-600" />}
           colorClass="bg-rose-50 dark:bg-rose-900/20"
+          privacyMode={privacyMode}
+        />
+        <StatCard
+          title="Contas Pendentes"
+          value={stats.pending}
+          icon={<AlertTriangle size={26} className="text-amber-600" />}
+          colorClass="bg-amber-50 dark:bg-amber-900/20"
           privacyMode={privacyMode}
         />
       </div>

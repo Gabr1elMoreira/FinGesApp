@@ -36,7 +36,8 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
         DESCRIÇÃO: t.description.toUpperCase(),
         CATEGORIA: t.category.toUpperCase(),
         MÉTODO: t.paymentMethod.toUpperCase(),
-        VALOR: Number(t.amount.toFixed(2))
+        VALOR: Number(t.amount.toFixed(2)),
+        SITUAÇÃO: t.isPaid ? 'PAGO' : 'PENDENTE'
       }));
 
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -75,9 +76,10 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
   };
 
   const stats = useMemo(() => {
-    const income = transactions.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0);
-    const expense = transactions.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
-    return { income, expense, balance: income - expense };
+    const income = transactions.filter(t => t.type === 'INCOME' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+    const expense = transactions.filter(t => t.type === 'EXPENSE' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+    const pending = transactions.filter(t => t.type === 'EXPENSE' && !t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+    return { income, expense, balance: income - expense, pending };
   }, [transactions]);
 
   const dailyData = useMemo(() => {
@@ -90,7 +92,7 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
 
     transactions.forEach(t => {
       const day = String(t.date).split('T')[0].split('-')[2];
-      if (daysMap[day]) {
+      if (daysMap[day] && t.isPaid) {
         if (t.type === 'INCOME') daysMap[day].income += t.amount;
         else daysMap[day].expense += t.amount;
       }
@@ -112,7 +114,7 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
 
   const categoryTotals = useMemo(() => {
     const categories: Record<string, number> = {};
-    const expenses = transactions.filter(t => t.type === 'EXPENSE');
+    const expenses = transactions.filter(t => t.type === 'EXPENSE' && t.isPaid);
     const totalExpense = expenses.reduce((acc, t) => acc + t.amount, 0);
 
     expenses.forEach(t => {
@@ -131,7 +133,7 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
 
   const paymentData = useMemo(() => {
     const methods: Record<string, number> = {};
-    const expenses = transactions.filter(t => t.type === 'EXPENSE');
+    const expenses = transactions.filter(t => t.type === 'EXPENSE' && t.isPaid);
     const totalExpense = expenses.reduce((acc, t) => acc + t.amount, 0);
 
     expenses.forEach(t => {
@@ -161,13 +163,13 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
 
       <div className="space-y-6 px-4 md:px-0">
         {/* CARDS DE RESUMO */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 uppercase">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 uppercase">
           <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
-            <p className="text-[10px] font-bold text-black dark:text-white">RECEITAS</p>
+            <p className="text-[10px] font-bold text-black dark:text-white">RECEITAS (PAGAS)</p>
             <p className="text-2xl font-bold text-emerald-600">R$ {stats.income.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </div>
           <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
-            <p className="text-[10px] font-bold text-black dark:text-white">DESPESAS</p>
+            <p className="text-[10px] font-bold text-black dark:text-white">DESPESAS (PAGAS)</p>
             <p className="text-2xl font-bold text-rose-600">R$ {stats.expense.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </div>
           <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
@@ -175,6 +177,10 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
             <p className={`text-2xl font-bold ${stats.balance >= 0 ? 'text-black dark:text-white' : 'text-rose-600'}`}>
               R$ {stats.balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </p>
+          </div>
+          <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
+            <p className="text-[10px] font-bold text-black dark:text-white">CONTAS PENDENTES</p>
+            <p className="text-2xl font-bold text-amber-600">R$ {stats.pending.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </div>
         </div>
 

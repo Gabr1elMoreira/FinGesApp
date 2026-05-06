@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Trash2, Edit2, ArrowUpRight, ArrowDownRight, CreditCard, Zap, Banknote } from 'lucide-react';
+import { Plus, Search, Trash2, Edit2, ArrowUpRight, ArrowDownRight, CreditCard, Zap, Banknote, CheckCircle2, Clock } from 'lucide-react';
 import { Transaction, User, Theme } from '../types';
 import TransactionModal from '../components/TransactionModal';
 import PrivacyValue from '../components/PrivacyValue';
@@ -119,6 +119,17 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
                     <span className="text-[10px] font-bold text-slate-950 dark:text-white uppercase tracking-tight">
                       {formatDateSafe(t.date)}
                     </span>
+                    <div className="flex items-center gap-1 mt-1">
+                      {t.isPaid ? (
+                        <span className="text-[8px] font-black text-emerald-600 uppercase flex items-center gap-0.5">
+                          <CheckCircle2 size={10} /> Pago
+                        </span>
+                      ) : (
+                        <span className="text-[8px] font-black text-amber-500 uppercase flex items-center gap-0.5">
+                          <Clock size={10} /> Pendente
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => setModalState({ open: true, data: t })} className="p-2 text-black dark:text-white hover:text-indigo-500 opacity-60 hover:opacity-100 transition-all">
@@ -177,6 +188,17 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
                     <span className="text-[10px] font-bold text-slate-950 dark:text-white uppercase tracking-tight">
                       {formatDateSafe(t.date)}
                     </span>
+                    <div className="flex items-center gap-1 mt-1">
+                      {t.isPaid ? (
+                        <span className="text-[8px] font-black text-emerald-600 uppercase flex items-center gap-0.5">
+                          <CheckCircle2 size={10} /> Pago
+                        </span>
+                      ) : (
+                        <span className="text-[8px] font-black text-amber-500 uppercase flex items-center gap-0.5">
+                          <Clock size={10} /> Pendente
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => setModalState({ open: true, data: t })} className="p-2 text-black dark:text-white opacity-60 hover:text-indigo-500 hover:opacity-100 transition-all">

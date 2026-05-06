@@ -68,8 +68,8 @@ export const aiService = {
         progressoAtual: g.currentAmount || 0,
         categoria: g.category
       })),
-      saldoMesAtual: currentMonthTxs.reduce((acc, t) => t.type === 'INCOME' ? acc + t.amount : acc - t.amount, 0),
-      totalGastosMesAtual: currentMonthTxs.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0)
+      saldoMesAtual: currentMonthTxs.filter(t => t.isPaid).reduce((acc, t) => t.type === 'INCOME' ? acc + t.amount : acc - t.amount, 0),
+      totalGastosMesAtual: currentMonthTxs.filter(t => t.type === 'EXPENSE' && t.isPaid).reduce((acc, t) => acc + t.amount, 0)
     };
 
     const systemInstruction = "Você é o FinGes AI de " + user.name + ".\n" +

@@ -80,7 +80,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
 
   const categoryData = useMemo(() => {
     const categories: Record<string, number> = {};
-    const expenses = transactions.filter(t => t.type === 'EXPENSE');
+    const expenses = transactions.filter(t => t.type === 'EXPENSE' && t.isPaid);
     const total = expenses.reduce((acc, t) => acc + t.amount, 0);
 
     expenses.forEach(t => {
@@ -98,7 +98,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
 
   const paymentMethodData = useMemo(() => {
     const methods: Record<string, number> = {};
-    const filteredTransactions = transactions;
+    const filteredTransactions = transactions.filter(t => t.isPaid);
     const total = filteredTransactions.length;
 
     filteredTransactions.forEach(t => {
@@ -128,11 +128,11 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
       });
 
       const income = dayTransactions
-        .filter(t => t.type === 'INCOME')
+        .filter(t => t.type === 'INCOME' && t.isPaid)
         .reduce((acc, t) => acc + t.amount, 0);
 
       const expense = dayTransactions
-        .filter(t => t.type === 'EXPENSE')
+        .filter(t => t.type === 'EXPENSE' && t.isPaid)
         .reduce((acc, t) => acc + t.amount, 0);
 
       data.push({

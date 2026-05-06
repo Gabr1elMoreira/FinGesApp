@@ -81,15 +81,15 @@ export const getMonthlyReport = async (req: AuthRequest, res: Response) => {
         });
 
         // Agregando Dados
-        const income = transactions.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0);
-        const expense = transactions.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
+        const income = transactions.filter(t => t.type === 'INCOME' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+        const expense = transactions.filter(t => t.type === 'EXPENSE' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
 
-        const prevIncome = prevTransactions.filter(t => t.type === 'INCOME').reduce((acc, t) => acc + t.amount, 0);
-        const prevExpense = prevTransactions.filter(t => t.type === 'EXPENSE').reduce((acc, t) => acc + t.amount, 0);
+        const prevIncome = prevTransactions.filter(t => t.type === 'INCOME' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
+        const prevExpense = prevTransactions.filter(t => t.type === 'EXPENSE' && t.isPaid).reduce((acc, t) => acc + t.amount, 0);
 
         // Agregando por Categoria (Top 3 Gastos)
         const categoryMap = new Map<string, number>();
-        transactions.filter(t => t.type === 'EXPENSE').forEach(t => {
+        transactions.filter(t => t.type === 'EXPENSE' && t.isPaid).forEach(t => {
             const current = categoryMap.get(t.category) || 0;
             categoryMap.set(t.category, current + t.amount);
         });
