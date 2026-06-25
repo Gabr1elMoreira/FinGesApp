@@ -18,11 +18,18 @@
           colors: {
             primary: {
               DEFAULT: '#7C5CFC',
-              dark: '#5B3BE8',
+              dark: '#6144ef',
+              light: '#9b7ffd',
             },
-            accent: '#1AEDB0',
-            surface: '#12131A',
-            card: '#1A1C23',
+            accent: {
+              DEFAULT: '#1AEDB0',
+              dark: '#13c994',
+            },
+            surface: '#08090f',
+            card: '#10111e',
+            'card-2': '#161829',
+            income: '#22c98e',
+            expense: '#ff4465',
           }
         },
       },
@@ -30,38 +37,46 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" href="/logo.png">
 
-
   <style>
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
+    :root {
+      --primary: #7C5CFC;
+      --primary-glow: rgba(124, 92, 252, 0.25);
+      --accent: #1AEDB0;
+      --accent-glow: rgba(26, 237, 176, 0.2);
+      --income-glow: rgba(34, 201, 142, 0.2);
+      --expense-glow: rgba(255, 68, 101, 0.2);
+      --warning-glow: rgba(245, 158, 11, 0.2);
+      --card-bg: #10111e;
+      --card-border: rgba(255, 255, 255, 0.055);
+      --surface: #08090f;
     }
 
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
+      background-color: #f4f5f9;
       overflow-x: hidden;
       overscroll-behavior-y: contain;
     }
 
     .dark body {
-      background-color: #0f172a;
+      background-color: #08090f;
+      background-image:
+        radial-gradient(ellipse at 10% 40%, rgba(124, 92, 252, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 10%, rgba(26, 237, 176, 0.03) 0%, transparent 40%);
     }
 
-    button,
-    select,
-    input {
-      touch-action: manipulation;
-    }
+    button, select, input { touch-action: manipulation; }
+
+    /* Selection color */
+    ::selection { background: rgba(124,92,252,0.25); color: #fff; }
   </style>
   <script type="importmap">
 {

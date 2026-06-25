@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, DollarSign, CheckCircle2, Clock } from 'lucide-react';
+import { X, DollarSign, CheckCircle2, Clock, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Transaction, Category, TransactionType, PaymentMethod, RecurrenceFrequency, PAYMENT_METHODS } from '../types';
 
 interface TransactionModalProps {
@@ -14,10 +14,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
 
   const formatToInputDate = (dateSource: string | Date) => {
     const d = new Date(dateSource);
-    if (isNaN(d.getTime())) {
-      const now = new Date();
-      return now.toISOString().split('T')[0];
-    }
+    if (isNaN(d.getTime())) return new Date().toISOString().split('T')[0];
     return d.toISOString().split('T')[0];
   };
 
@@ -28,7 +25,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     category: Category.FOOD,
     paymentMethod: 'PIX' as PaymentMethod,
     date: formatToInputDate(new Date()),
-    isPaid: true, // NOVO ESTADO
+    isPaid: true,
     isRecurrent: false,
     recurrenceFrequency: 'NONE' as RecurrenceFrequency
   });
@@ -61,17 +58,11 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     }
   }, [initialData, isOpen, enabledCategories]);
 
-  // Lógica de Inteligência: Se a data for futura, sugere "Pendente"
   const handleDateChange = (newDate: string) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const selectedDate = new Date(newDate + 'T00:00:00Z');
-
-    setFormData({
-      ...formData,
-      date: newDate,
-      isPaid: selectedDate > today ? false : formData.isPaid
-    });
+    setFormData({ ...formData, date: newDate, isPaid: selectedDate > today ? false : formData.isPaid });
   };
 
   if (!isOpen) return null;
@@ -80,10 +71,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     e.preventDefault();
     try {
       const dateObj = new Date(formData.date + 'T00:00:00Z');
-      if (isNaN(dateObj.getTime())) {
-        alert("Data inválida.");
-        return;
-      }
+      if (isNaN(dateObj.getTime())) { alert("Data inválida."); return; }
       const payload = {
         description: formData.description,
         amount: Number(formData.amount),
@@ -101,170 +89,215 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     }
   };
 
+  const isIncome = formData.type === 'INCOME';
+
+  const labelClass = "block text-[10px] font-bold text-slate-500 dark:text-[#4a4f6e] uppercase tracking-[0.15em] mb-1.5 px-0.5";
+  const inputClass = "w-full px-4 py-3 rounded-xl font-semibold text-sm bg-slate-100 dark:bg-[#0a0b18] border border-slate-200 dark:border-white/[0.07] text-slate-900 dark:text-[#eaebf4] focus:border-primary/50 dark:focus:border-primary/40 focus:ring-2 focus:ring-primary/10 outline-none transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-[#2a2e48]";
+  const selectClass = inputClass + " appearance-none cursor-pointer";
+
   return (
     <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white dark:bg-slate-800 w-full max-w-lg rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300 border dark:border-slate-700">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-indigo-600 text-white">
-          <h3 className="text-lg font-bold">{initialData ? 'Editar Transação' : 'Nova Transação'}</h3>
-          <button onClick={onClose} className="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-colors">
-            <X size={20} />
-          </button>
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="
+        relative w-full max-w-md
+        bg-white dark:bg-[#0f1021]
+        border-t sm:border border-slate-200/70 dark:border-white/[0.07]
+        rounded-t-[28px] sm:rounded-2xl
+        shadow-2xl dark:shadow-black/60
+        overflow-hidden
+        animate-in slide-in-from-bottom duration-300 sm:zoom-in-95
+      ">
+        {/* Header */}
+        <div className="relative px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+          {/* Type indicator strip */}
+          <div className={`absolute top-0 left-0 right-0 h-0.5 transition-colors duration-300 ${isIncome ? 'bg-gradient-to-r from-emerald-500/80 via-emerald-500/40 to-transparent' : 'bg-gradient-to-r from-rose-500/80 via-rose-500/40 to-transparent'}`} />
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+              {initialData ? 'Editar Transação' : 'Nova Transação'}
+            </h3>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.07] transition-all"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-5 max-h-[85vh] overflow-y-auto no-scrollbar">
-          {/* SELETOR DE TIPO (ENTRADA/SAÍDA) */}
-          <div className="grid grid-cols-2 gap-3 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[82vh] overflow-y-auto no-scrollbar">
+
+          {/* Type selector */}
+          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-[#0a0b18] rounded-xl border border-slate-200/50 dark:border-white/[0.05]">
             <button
               type="button"
               onClick={() => setFormData({ ...formData, type: 'INCOME' })}
-              className={`py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${formData.type === 'INCOME' ? 'bg-emerald-500 text-white shadow-md' : 'text-slate-950 dark:text-white'}`}
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                formData.type === 'INCOME'
+                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                  : 'text-slate-500 dark:text-[#4a4f6e] hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
             >
-              Entrada
+              <ArrowUpRight size={15} /> Entrada
             </button>
             <button
               type="button"
               onClick={() => setFormData({ ...formData, type: 'EXPENSE' })}
-              className={`py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${formData.type === 'EXPENSE' ? 'bg-rose-500 text-white shadow-md' : 'text-slate-950 dark:text-white'}`}
+              className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                formData.type === 'EXPENSE'
+                  ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
+                  : 'text-slate-500 dark:text-[#4a4f6e] hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
             >
-              Saída
+              <ArrowDownRight size={15} /> Saída
             </button>
           </div>
 
-          {/* SELETOR DE SITUAÇÃO */}
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest px-1">
-              Situação do Lançamento
-            </label>
-            <div className="grid grid-cols-2 gap-3">
+          {/* Status */}
+          <div>
+            <label className={labelClass}>Situação</label>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, isPaid: true })}
-                className={`flex items-center justify-center gap-2 py-3 rounded-2xl border-2 transition-all font-bold text-xs uppercase tracking-tighter 
-        ${formData.isPaid
-                    ? 'border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                    : 'border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 text-black dark:text-white hover:border-slate-300 dark:hover:border-slate-500'
-                  }`}
+                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                  formData.isPaid
+                    ? 'border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-600 dark:text-emerald-400'
+                    : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#4a4f6e] hover:border-slate-300 dark:hover:border-white/[0.12]'
+                }`}
               >
-                <CheckCircle2 size={16} /> Pago
+                <CheckCircle2 size={14} /> Pago
               </button>
-
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, isPaid: false })}
-                className={`flex items-center justify-center gap-2 py-3 rounded-2xl border-2 transition-all font-bold text-xs uppercase tracking-tighter 
-        ${!formData.isPaid
-                    ? 'border-amber-500 bg-amber-500 text-white shadow-lg shadow-amber-500/20'
-                    : 'border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800 text-black dark:text-white hover:border-slate-300 dark:hover:border-slate-500'
-                  }`}
+                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                  !formData.isPaid
+                    ? 'border-amber-500/40 bg-amber-500/[0.08] text-amber-600 dark:text-amber-400'
+                    : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#4a4f6e] hover:border-slate-300 dark:hover:border-white/[0.12]'
+                }`}
               >
-                <Clock size={16} /> Pendente
+                <Clock size={14} /> Pendente
               </button>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest px-1">Descrição</label>
-              <input
-                required
-                type="text"
-                className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:border-indigo-500 outline-none transition-all text-black dark:text-white font-bold"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </div>
+          {/* Description */}
+          <div>
+            <label className={labelClass}>Descrição</label>
+            <input
+              required
+              type="text"
+              className={inputClass}
+              placeholder="Ex: Supermercado, Salário..."
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            />
+          </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest px-1">Valor</label>
-                <div className="relative">
-                  <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-950 dark:text-white" size={18} />
-                  <input
-                    required
-                    type="number"
-                    step="0.01"
-                    className="w-full pl-12 pr-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:border-indigo-500 outline-none text-black dark:text-white font-black text-lg"
-                    value={formData.amount || ''}
-                    onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest px-1">Data</label>
+          {/* Amount + Date */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Valor</label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#4a4f6e] text-sm font-bold">R$</span>
                 <input
                   required
-                  type="date"
-                  className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:border-indigo-500 outline-none text-black dark:text-white font-bold"
-                  value={formData.date}
-                  onChange={(e) => handleDateChange(e.target.value)}
+                  type="number"
+                  step="0.01"
+                  className={inputClass + " pl-10 font-black text-base font-mono-num"}
+                  placeholder="0,00"
+                  value={formData.amount || ''}
+                  onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
                 />
               </div>
             </div>
-
-            {/* CATEGORIA E PAGAMENTO */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest px-1">Categoria</label>
-                <select
-                  className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none text-black dark:text-white font-bold appearance-none"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
-                >
-                  {enabledCategories.map(cat => (
-                    <option key={cat} value={cat} className="dark:bg-slate-800">{cat}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest px-1">Meio de Pagamento</label>
-                <select
-                  className="w-full px-5 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl outline-none text-black dark:text-white font-bold appearance-none"
-                  value={formData.paymentMethod}
-                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
-                >
-                  {PAYMENT_METHODS.map(pm => (
-                    <option key={pm.value} value={pm.value} className="dark:bg-slate-800">{pm.label}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-5 h-5 rounded-lg text-indigo-600 border-slate-300 focus:ring-indigo-500"
-                  checked={formData.isRecurrent}
-                  onChange={(e) => setFormData({ ...formData, isRecurrent: e.target.checked, recurrenceFrequency: e.target.checked ? 'MONTHLY' : 'NONE' })}
-                />
-                <span className="text-xs font-bold text-black dark:text-white">Despesa Recorrente</span>
-              </label>
-
-              {formData.isRecurrent && (
-                <div className="pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <select
-                    className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-black dark:text-white"
-                    value={formData.recurrenceFrequency}
-                    onChange={(e) => setFormData({ ...formData, recurrenceFrequency: e.target.value as RecurrenceFrequency })}
-                  >
-                    <option value="WEEKLY">Semanal</option>
-                    <option value="MONTHLY">Mensal</option>
-                    <option value="YEARLY">Anual</option>
-                  </select>
-                </div>
-              )}
+            <div>
+              <label className={labelClass}>Data</label>
+              <input
+                required
+                type="date"
+                className={inputClass}
+                value={formData.date}
+                onChange={(e) => handleDateChange(e.target.value)}
+              />
             </div>
           </div>
 
-          <div className="pt-4 pb-4">
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition-all active:scale-[0.98]"
-            >
-              {initialData ? 'Atualizar Transação' : 'Salvar Lançamento'}
-            </button>
+          {/* Category + Method */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Categoria</label>
+              <select
+                className={selectClass}
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
+              >
+                {enabledCategories.map(cat => (
+                  <option key={cat} value={cat} className="dark:bg-[#0f1021]">{cat}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Pagamento</label>
+              <select
+                className={selectClass}
+                value={formData.paymentMethod}
+                onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
+              >
+                {PAYMENT_METHODS.map(pm => (
+                  <option key={pm.value} value={pm.value} className="dark:bg-[#0f1021]">{pm.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
+
+          {/* Recurrent */}
+          <div className="bg-slate-50 dark:bg-[#0a0b18] border border-slate-200/60 dark:border-white/[0.06] p-4 rounded-xl space-y-3">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${formData.isRecurrent ? 'bg-primary border-primary' : 'border-slate-300 dark:border-[#2a2e48] group-hover:border-primary/50'}`}>
+                {formData.isRecurrent && <div className="w-2 h-2 bg-white rounded-sm" />}
+              </div>
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={formData.isRecurrent}
+                onChange={(e) => setFormData({ ...formData, isRecurrent: e.target.checked, recurrenceFrequency: e.target.checked ? 'MONTHLY' : 'NONE' })}
+              />
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Despesa Recorrente</span>
+            </label>
+
+            {formData.isRecurrent && (
+              <div className="pt-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                <select
+                  className={selectClass + " text-xs"}
+                  value={formData.recurrenceFrequency}
+                  onChange={(e) => setFormData({ ...formData, recurrenceFrequency: e.target.value as RecurrenceFrequency })}
+                >
+                  <option value="WEEKLY">Semanal</option>
+                  <option value="MONTHLY">Mensal</option>
+                  <option value="YEARLY">Anual</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className={`w-full py-3.5 rounded-xl font-bold text-white text-sm shadow-lg transition-all active:scale-[0.98] hover:-translate-y-0.5 ${
+              isIncome
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-500/20 hover:shadow-emerald-500/30'
+                : 'bg-gradient-to-r from-primary to-primary-dark shadow-primary/20 hover:shadow-primary/35'
+            }`}
+          >
+            {initialData ? 'Atualizar Transação' : 'Salvar Lançamento'}
+          </button>
         </form>
       </div>
     </div>

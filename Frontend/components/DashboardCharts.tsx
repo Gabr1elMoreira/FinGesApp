@@ -21,39 +21,26 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
+  const COLORS = ['#7C5CFC', '#1AEDB0', '#f59e0b', '#ff4465', '#8b5cf6', '#06b6d4', '#ec4899'];
 
-  // Cores de alto contraste extremo: Preto ou Branco
-  const chartTextColor = theme === 'dark' ? '#ffffff' : '#000000';
-  const chartGridColor = theme === 'dark' ? '#334155' : '#e2e8f0';
+  const isDark = theme === 'dark';
+  const chartTextColor = isDark ? '#7b82a4' : '#64748b';
+  const chartGridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
 
-  // Configuração centralizada dos Tooltips com Preto/Branco estritos
   const tooltipStyle = {
     contentStyle: {
-      backgroundColor: theme === 'dark' ? 'rgba(15, 23, 42, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-      backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-      borderRadius: '24px',
-      border: `1px solid ${theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-      boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
-      padding: '16px'
+      backgroundColor: isDark ? '#0f1021' : '#fff',
+      border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
+      borderRadius: '16px',
+      boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 24px rgba(0,0,0,0.1)',
+      padding: '12px 16px',
     },
-    itemStyle: {
-      color: theme === 'dark' ? '#ffffff' : '#000000', // Branco puro ou Preto puro
-      fontSize: '12px',
-      fontWeight: 700
-    },
+    itemStyle: { color: isDark ? '#eaebf4' : '#334155', fontWeight: 700, fontSize: '12px' },
     labelStyle: {
-      color: theme === 'dark' ? '#ffffff' : '#000000', // Branco puro ou Preto puro
-      fontSize: '10px',
-      fontWeight: 800,
-      textTransform: 'uppercase' as const,
-      letterSpacing: '0.05em',
-      marginBottom: '4px'
+      color: isDark ? '#eaebf4' : '#1e293b', fontWeight: 800, fontSize: '11px',
+      textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: '4px'
     },
-    cursor: {
-      fill: theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-    }
+    cursor: { fill: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' },
   };
 
   const formatCurrency = (value: number) => {
@@ -66,13 +53,12 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
       const data = payload[0].payload;
       const value = payload[0].value;
       const percent = data.percentageValue;
-
       return (
-        <div className="glass-card p-4 rounded-3xl border border-slate-200/50 dark:border-white/5 shadow-2xl backdrop-blur-xl">
-          <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{label || data.name}</p>
-          <p className="text-base font-black text-slate-900 dark:text-white font-mono-num tracking-tight">
+        <div style={tooltipStyle.contentStyle}>
+          <p style={tooltipStyle.labelStyle}>{label || data.name}</p>
+          <p style={{ ...tooltipStyle.itemStyle, fontFamily: 'JetBrains Mono, monospace' }}>
             {typeof value === 'number' && !suffix ? formatCurrency(value) : `${value}${suffix}`}
-            <span className="ml-2 text-primary font-black opacity-80">({percent}%)</span>
+            {percent && <span style={{ color: '#7C5CFC', marginLeft: 6 }}>({percent}%)</span>}
           </p>
         </div>
       );
@@ -146,17 +132,21 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
     return data;
   }, [transactions, selectedMonth, selectedYear]);
 
+  const cardClass = "rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden";
+  const headerClass = "flex items-center gap-3 px-5 py-4 border-b border-slate-100 dark:border-white/[0.05]";
+  const iconClass = "w-8 h-8 rounded-xl flex items-center justify-center shrink-0";
+
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-white/5 overflow-hidden group">
-          <div className="flex items-center gap-3 mb-8 relative z-10">
-            <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              <BarChart3 size={24} className="text-amber-500" />
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className={`lg:col-span-2 ${cardClass}`}>
+          <div className={headerClass}>
+            <div className={`${iconClass} bg-amber-500/10`}>
+              <BarChart3 size={16} className="text-amber-500" />
             </div>
-            <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs leading-none">Gastos por Categoria</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white text-sm">Gastos por Categoria</h3>
           </div>
-          <div className={`${isMobile ? 'h-[400px]' : 'h-[300px]'} w-full`}>
+          <div className={`${isMobile ? 'h-[360px]' : 'h-[260px]'} w-full px-5 pb-5 pt-4`}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={isMobile ? categoryData : categoryData.slice(0, 6)}
@@ -207,14 +197,14 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
           </div>
         </div>
 
-        <div className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-white/5 overflow-hidden group">
-          <div className="flex items-center gap-3 mb-8 relative z-10">
-            <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              <PieIcon size={24} className="text-emerald-500" />
+        <div className={cardClass}>
+          <div className={headerClass}>
+            <div className={`${iconClass} bg-accent/10`}>
+              <PieIcon size={16} className="text-accent" />
             </div>
-            <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs leading-none">Distribuição</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white text-sm">Distribuição</h3>
           </div>
-          <div className="h-[250px] sm:h-[300px] w-full flex items-center justify-center">
+          <div className="h-[260px] w-full px-5 pb-5 pt-4 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -243,15 +233,15 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-white/5 overflow-hidden group">
-          <div className="flex items-center gap-3 mb-8 relative z-10">
-            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              <CreditCard size={24} className="text-primary dark:text-primary-dark" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className={cardClass}>
+          <div className={headerClass}>
+            <div className={`${iconClass} bg-primary/10`}>
+              <CreditCard size={16} className="text-primary" />
             </div>
-            <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs leading-none">Meios de Pagamento</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white text-sm">Meios de Pagamento</h3>
           </div>
-          <div className="h-[250px] sm:h-[300px] w-full">
+          <div className="h-[260px] px-5 pb-5 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={paymentMethodData}
@@ -282,17 +272,17 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
           </div>
         </div>
 
-        <div className="lg:col-span-2 glass-card p-6 sm:p-8 rounded-3xl border border-slate-200/50 dark:border-white/5 overflow-hidden group">
-          <div className="flex items-center gap-3 mb-8 relative z-10">
-            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              <LineIcon size={24} className="text-primary dark:text-primary-dark" />
+        <div className={`lg:col-span-2 ${cardClass}`}>
+          <div className={headerClass}>
+            <div className={`${iconClass} bg-primary/10`}>
+              <LineIcon size={16} className="text-primary" />
             </div>
-            <div className="flex flex-col justify-center">
-              <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs leading-none">Evolução Mensal</h3>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest leading-none mt-1.5">Dados detalhados do período</p>
+            <div>
+              <h3 className="font-bold text-slate-900 dark:text-white text-sm">Evolução Mensal</h3>
+              <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] font-medium mt-0.5">Entradas e saídas diárias</p>
             </div>
           </div>
-          <div className="h-[250px] sm:h-[300px] w-full">
+          <div className="h-[260px] px-5 pb-5 pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={dailyEvolutionData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
@@ -313,10 +303,10 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="glass-card p-4 rounded-3xl border border-slate-200/50 dark:border-white/5 shadow-2xl backdrop-blur-xl">
-                          <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">DIA {label}</p>
+                        <div style={tooltipStyle.contentStyle}>
+                          <p style={tooltipStyle.labelStyle}>Dia {label}</p>
                           {payload.map((entry: any, index: number) => (
-                            <p key={index} className="text-sm font-black font-mono-num tracking-tight" style={{ color: entry.stroke }}>
+                            <p key={index} style={{ ...tooltipStyle.itemStyle, color: entry.stroke, fontFamily: 'JetBrains Mono, monospace' }}>
                               {entry.name}: {formatCurrency(entry.value)}
                             </p>
                           ))}

@@ -13,6 +13,9 @@ import Login from './pages/Login';
 import MonthYearPicker from './components/MonthYearPicker';
 import AdminPanel from './pages/AdminPanel';
 import SystemAlert from './components/SystemAlert';
+import CalendarView from './pages/CalendarView';
+import MonthComparison from './pages/MonthComparison';
+import FocusMode from './components/FocusMode';
 import { supabase } from './services/supabase';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "https://finges-backend.vercel.app";
@@ -28,6 +31,7 @@ const App: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [globalNotification, setGlobalNotification] = useState<any>(null);
+  const [focusModeOpen, setFocusModeOpen] = useState(false);
 
   // Aplicar tema e persistir
   useEffect(() => {
@@ -55,6 +59,15 @@ const App: React.FC = () => {
     };
   }, []);
 
+
+  // ESC key closes Focus Mode
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && focusModeOpen) setFocusModeOpen(false);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [focusModeOpen]);
 
   // Inicialização Robusta via API
   useEffect(() => {
@@ -196,14 +209,16 @@ const App: React.FC = () => {
   if (!isLoggedIn) return <Login onLogin={handleLogin} theme={theme} />;
 
   return (
+    <>
     <Layout
       currentPage={currentPage} setCurrentPage={setCurrentPage}
       user={user!} onLogout={handleLogout} onSwitchUser={handleSwitchUser}
       theme={theme} transactions={transactions}
       selectedMonth={selectedMonth}
       selectedYear={selectedYear}
+      onFocusMode={() => setFocusModeOpen(true)}
     >
-      {(currentPage === 'dashboard' || currentPage === 'transactions' || currentPage === 'reports' || currentPage === 'recurring' || currentPage === 'goals') && (
+      {(['dashboard','transactions','reports','recurring','goals','calendar'].includes(currentPage)) && (
         <MonthYearPicker
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}
@@ -217,6 +232,24 @@ const App: React.FC = () => {
           transactions={filteredTransactions}
           allTransactions={transactions}
           user={user!}
+          theme={theme}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          onFocusMode={() => setFocusModeOpen(true)}
+        />
+      )}
+      {currentPage === 'calendar' && (
+        <CalendarView
+          transactions={filteredTransactions}
+          user={user!}
+          theme={theme}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+        />
+      )}
+      {currentPage === 'comparison' && (
+        <MonthComparison
+          allTransactions={transactions}
           theme={theme}
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}
@@ -243,13 +276,24 @@ const App: React.FC = () => {
       {currentPage === 'admin' && <AdminPanel />}
 
       {globalNotification && (
-        <SystemAlert 
-          notification={globalNotification} 
-          onClose={() => setGlobalNotification(null)} 
+        <SystemAlert
+          notification={globalNotification}
+          onClose={() => setGlobalNotification(null)}
         />
       )}
     </Layout>
 
+    {focusModeOpen && (
+      <FocusMode
+        allTransactions={transactions}
+        user={user!}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        onNavigate={(page) => { setCurrentPage(page); setFocusModeOpen(false); }}
+        onClose={() => setFocusModeOpen(false)}
+      />
+    )}
+    </>
   );
 };
 

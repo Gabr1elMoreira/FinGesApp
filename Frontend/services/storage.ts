@@ -154,5 +154,18 @@ export const storageService = {
   saveTransaction: async (tx: any): Promise<any> => { return tx; },
   updateTransaction: async (id: string, updates: any) => { },
   deleteTransaction: async (id: string) => { },
-  processRecurrentExpenses: async () => 0
+  processRecurrentExpenses: async () => 0,
+
+  // --- Widget Configuration (per user) ---
+  getWidgetConfig: (userId: string): { showStats: boolean; showAlerts: boolean; showCharts: boolean; showRecent: boolean } => {
+    const key = `finanza_widgets_${userId}`;
+    const stored = localStorage.getItem(key);
+    const defaults = { showStats: true, showAlerts: true, showCharts: true, showRecent: true };
+    if (!stored) return defaults;
+    try { return { ...defaults, ...JSON.parse(stored) }; } catch { return defaults; }
+  },
+
+  saveWidgetConfig: (userId: string, config: { showStats: boolean; showAlerts: boolean; showCharts: boolean; showRecent: boolean }): void => {
+    localStorage.setItem(`finanza_widgets_${userId}`, JSON.stringify(config));
+  },
 };
