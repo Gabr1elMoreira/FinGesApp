@@ -59,22 +59,22 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-black dark:text-white">Movimentações</h2>
+        <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">Movimentações</h2>
         <button
           onClick={() => setModalState({ open: true, data: null })}
-          className="bg-indigo-600 text-white px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-indigo-700 transition-all shadow-lg w-full sm:w-auto"
+          className="bg-gradient-to-br from-primary to-primary-dark text-white px-6 py-3.5 rounded-2xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5 active:scale-95 w-full sm:w-auto"
         >
           <Plus size={20} />
           <span>Novo Lançamento</span>
         </button>
       </div>
 
-      <div className="relative w-full">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-950 dark:text-white" size={18} />
+      <div className="relative w-full group">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" size={18} />
         <input
           type="text"
           placeholder="Pesquisar transação..."
-          className="w-full pl-12 pr-4 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-black dark:text-white transition-all text-sm font-semibold"
+          className="w-full pl-12 pr-4 py-4 glass-card rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white transition-all text-sm font-semibold placeholder:text-slate-400 border border-slate-200/50 dark:border-white/5"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
@@ -90,20 +90,20 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
           <div className="space-y-3">
             {filtered.filter(t => t.type === 'INCOME').map(t => (
-              <div key={t.id} className="group bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between transition-all hover:border-emerald-200 dark:hover:border-emerald-500/30">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600">
-                    <ArrowUpRight size={20} />
+              <div key={t.id} className="group glass-card p-4 rounded-3xl flex items-center justify-between transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/5 hover:-translate-y-0.5 border border-slate-200/50 dark:border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                    <ArrowUpRight size={22} />
                   </div>
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-black dark:text-white">{t.description}</span>
-                      {t.isRecurrent && <span className="bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase">Recorrente</span>}
+                      <span className="text-sm font-black text-slate-900 dark:text-white tracking-tight">{t.description}</span>
+                      {t.isRecurrent && <span className="bg-amber-500/10 text-amber-500 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">Recorrente</span>}
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-950 dark:text-white uppercase tracking-widest">
-                      <span>{t.category}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">
+                      <span className="text-primary dark:text-accent">{t.category}</span>
+                      <span className="opacity-50">•</span>
+                      <span className="flex items-center gap-1 opacity-80">
                         {getMethodIcon(t.paymentMethod)}
                         {t.paymentMethod}
                       </span>
@@ -113,29 +113,29 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col items-end">
-                    <span className="text-sm font-black text-emerald-600">
-                      + <PrivacyValue value={t.amount} privacyMode={privacyMode} currency={true} className="ml-1" />
+                    <span className="text-base font-black text-emerald-500 font-mono-num tracking-tight">
+                      + <PrivacyValue value={t.amount} privacyMode={privacyMode} currency={true} className="ml-0.5" />
                     </span>
-                    <span className="text-[10px] font-bold text-slate-950 dark:text-white uppercase tracking-tight">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono-num mt-1">
                       {formatDateSafe(t.date)}
                     </span>
                     <div className="flex items-center gap-1 mt-1">
                       {t.isPaid ? (
-                        <span className="text-[8px] font-black text-emerald-600 uppercase flex items-center gap-0.5">
+                        <span className="text-[9px] font-black text-emerald-500 uppercase flex items-center gap-0.5 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
                           <CheckCircle2 size={10} /> Pago
                         </span>
                       ) : (
-                        <span className="text-[8px] font-black text-amber-500 uppercase flex items-center gap-0.5">
+                        <span className="text-[9px] font-black text-amber-500 uppercase flex items-center gap-0.5 bg-amber-500/10 px-1.5 py-0.5 rounded-full">
                           <Clock size={10} /> Pendente
                         </span>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => setModalState({ open: true, data: t })} className="p-2 text-black dark:text-white hover:text-indigo-500 opacity-60 hover:opacity-100 transition-all">
+                  <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => setModalState({ open: true, data: t })} className="p-2 text-slate-400 hover:text-primary transition-all hover:scale-110 active:scale-95 bg-slate-100 dark:bg-white/5 rounded-xl">
                       <Edit2 size={16} />
                     </button>
-                    <button onClick={() => onDelete(t.id)} className="p-2 text-black dark:text-white hover:text-rose-500 opacity-60 hover:opacity-100 transition-all">
+                    <button onClick={() => onDelete(t.id)} className="p-2 text-slate-400 hover:text-rose-500 transition-all hover:scale-110 active:scale-95 bg-slate-100 dark:bg-white/5 rounded-xl">
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -143,8 +143,8 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
               </div>
             ))}
             {filtered.filter(t => t.type === 'INCOME').length === 0 && (
-              <div className="text-center py-10 bg-slate-50 dark:bg-slate-900/50 rounded-[24px] border-2 border-dashed border-slate-200 dark:border-slate-800">
-                <p className="text-black dark:text-white opacity-40 font-bold text-xs uppercase tracking-widest">Nenhuma entrada</p>
+              <div className="text-center py-10 glass-card border-dashed border-2 rounded-3xl opacity-70">
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Nenhuma entrada</p>
               </div>
             )}
           </div>
@@ -159,20 +159,20 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
           <div className="space-y-3">
             {filtered.filter(t => t.type === 'EXPENSE').map(t => (
-              <div key={t.id} className="group bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center justify-between transition-all hover:border-rose-200 dark:hover:border-rose-500/30">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-900/20 text-rose-600">
-                    <ArrowDownRight size={20} />
+              <div key={t.id} className="group glass-card p-4 rounded-3xl flex items-center justify-between transition-all duration-300 hover:shadow-lg hover:shadow-rose-500/5 hover:-translate-y-0.5 border border-slate-200/50 dark:border-white/5">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                    <ArrowDownRight size={22} />
                   </div>
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-black dark:text-white">{t.description}</span>
-                      {t.isRecurrent && <span className="bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase">Recorrente</span>}
+                      <span className="text-sm font-black text-slate-900 dark:text-white tracking-tight">{t.description}</span>
+                      {t.isRecurrent && <span className="bg-amber-500/10 text-amber-500 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">Recorrente</span>}
                     </div>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-950 dark:text-white uppercase tracking-widest">
-                      <span>{t.category}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">
+                      <span className="text-primary dark:text-accent">{t.category}</span>
+                      <span className="opacity-50">•</span>
+                      <span className="flex items-center gap-1 opacity-80">
                         {getMethodIcon(t.paymentMethod)}
                         {t.paymentMethod}
                       </span>
@@ -182,29 +182,29 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col items-end">
-                    <span className="text-sm font-black text-rose-600">
-                      - <PrivacyValue value={t.amount} privacyMode={privacyMode} currency={true} className="ml-1" />
+                    <span className="text-base font-black text-rose-500 font-mono-num tracking-tight">
+                      - <PrivacyValue value={t.amount} privacyMode={privacyMode} currency={true} className="ml-0.5" />
                     </span>
-                    <span className="text-[10px] font-bold text-slate-950 dark:text-white uppercase tracking-tight">
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono-num mt-1">
                       {formatDateSafe(t.date)}
                     </span>
                     <div className="flex items-center gap-1 mt-1">
                       {t.isPaid ? (
-                        <span className="text-[8px] font-black text-emerald-600 uppercase flex items-center gap-0.5">
+                        <span className="text-[9px] font-black text-emerald-500 uppercase flex items-center gap-0.5 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
                           <CheckCircle2 size={10} /> Pago
                         </span>
                       ) : (
-                        <span className="text-[8px] font-black text-amber-500 uppercase flex items-center gap-0.5">
+                        <span className="text-[9px] font-black text-amber-500 uppercase flex items-center gap-0.5 bg-amber-500/10 px-1.5 py-0.5 rounded-full">
                           <Clock size={10} /> Pendente
                         </span>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => setModalState({ open: true, data: t })} className="p-2 text-black dark:text-white opacity-60 hover:text-indigo-500 hover:opacity-100 transition-all">
+                  <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => setModalState({ open: true, data: t })} className="p-2 text-slate-400 hover:text-primary transition-all hover:scale-110 active:scale-95 bg-slate-100 dark:bg-white/5 rounded-xl">
                       <Edit2 size={16} />
                     </button>
-                    <button onClick={() => onDelete(t.id)} className="p-2 text-black dark:text-white opacity-60 hover:text-rose-500 hover:opacity-100 transition-all">
+                    <button onClick={() => onDelete(t.id)} className="p-2 text-slate-400 hover:text-rose-500 transition-all hover:scale-110 active:scale-95 bg-slate-100 dark:bg-white/5 rounded-xl">
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -212,8 +212,8 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
               </div>
             ))}
             {filtered.filter(t => t.type === 'EXPENSE').length === 0 && (
-              <div className="text-center py-10 bg-slate-50 dark:bg-slate-900/50 rounded-[24px] border-2 border-dashed border-slate-200 dark:border-slate-800">
-                <p className="text-black dark:text-white opacity-40 font-bold text-xs uppercase tracking-widest">Nenhuma saída</p>
+              <div className="text-center py-10 glass-card border-dashed border-2 rounded-3xl opacity-70">
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-widest">Nenhuma saída</p>
               </div>
             )}
           </div>

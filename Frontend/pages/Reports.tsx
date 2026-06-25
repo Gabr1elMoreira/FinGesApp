@@ -63,11 +63,11 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
       const percent = data.percentageValue;
 
       return (
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl ring-1 ring-black/5">
-          <p className="text-[10px] font-black text-black dark:text-white uppercase tracking-widest mb-1">{label || data.name}</p>
-          <p className="text-sm font-bold text-black dark:text-white">
+        <div className="glass-card p-4 rounded-3xl border border-slate-200/50 dark:border-white/5 shadow-2xl backdrop-blur-xl">
+          <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{label || data.name}</p>
+          <p className="text-base font-black text-slate-900 dark:text-white font-mono-num tracking-tight">
             {typeof value === 'number' && !suffix ? formatCurrency(value) : `${value}${suffix}`}
-            {percent && <span className="ml-1.5 text-indigo-600 dark:text-indigo-400 font-black">({percent}%)</span>}
+            {percent && <span className="ml-2 text-primary font-black opacity-80">({percent}%)</span>}
           </p>
         </div>
       );
@@ -152,57 +152,60 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
     <div className="w-full space-y-8 pb-20 uppercase">
       {/* HEADER TELA COM APENAS BOTÃO EXCEL */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 md:px-0">
-        <h2 className="text-2xl font-bold text-black dark:text-white tracking-tighter">RELATÓRIO {monthName}</h2>
+        <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">RELATÓRIO {monthName}</h2>
         <button
           onClick={exportToExcel}
-          className="w-full sm:w-auto bg-emerald-600 text-white px-6 py-3 rounded-lg font-bold uppercase text-xs shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          className="w-full sm:w-auto bg-gradient-to-br from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95"
         >
-          <FileSpreadsheet size={18} /> EXPORTAR PLANILHA XLSX
+          <FileSpreadsheet size={20} /> EXPORTAR PLANILHA XLSX
         </button>
       </div>
 
       <div className="space-y-6 px-4 md:px-0">
         {/* CARDS DE RESUMO */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 uppercase">
-          <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
-            <p className="text-[10px] font-bold text-black dark:text-white">RECEITAS (PAGAS)</p>
-            <p className="text-2xl font-bold text-emerald-600">R$ {stats.income.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+          <div className="p-6 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl group hover:-translate-y-1 transition-all duration-300">
+            <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 tracking-widest mb-2">RECEITAS (PAGAS)</p>
+            <p className="text-2xl font-black text-emerald-500 font-mono-num tracking-tight">R$ {stats.income.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </div>
-          <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
-            <p className="text-[10px] font-bold text-black dark:text-white">DESPESAS (PAGAS)</p>
-            <p className="text-2xl font-bold text-rose-600">R$ {stats.expense.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+          <div className="p-6 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl group hover:-translate-y-1 transition-all duration-300">
+            <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 tracking-widest mb-2">DESPESAS (PAGAS)</p>
+            <p className="text-2xl font-black text-rose-500 font-mono-num tracking-tight">R$ {stats.expense.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </div>
-          <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
-            <p className="text-[10px] font-bold text-black dark:text-white">SALDO LÍQUIDO</p>
-            <p className={`text-2xl font-bold ${stats.balance >= 0 ? 'text-black dark:text-white' : 'text-rose-600'}`}>
+          <div className="p-6 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl group hover:-translate-y-1 transition-all duration-300">
+            <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 tracking-widest mb-2">SALDO LÍQUIDO</p>
+            <p className={`text-2xl font-black font-mono-num tracking-tight ${stats.balance >= 0 ? 'text-slate-900 dark:text-white' : 'text-rose-500'}`}>
               R$ {stats.balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="p-6 border border-black dark:border-white bg-transparent rounded-xl">
-            <p className="text-[10px] font-bold text-black dark:text-white">CONTAS PENDENTES</p>
-            <p className="text-2xl font-bold text-amber-600">R$ {stats.pending.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+          <div className="p-6 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl group hover:-translate-y-1 transition-all duration-300">
+            <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 tracking-widest mb-2">CONTAS PENDENTES</p>
+            <p className="text-2xl font-black text-amber-500 font-mono-num tracking-tight">R$ {stats.pending.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </div>
         </div>
 
         {/* GRÁFICO DE EVOLUÇÃO */}
-        <div className="p-6 border border-black dark:border-white rounded-xl">
-          <h3 className="font-bold text-xs mb-6 text-black dark:text-white flex items-center gap-2">
-            <Activity size={16} /> FLUXO E EVOLUÇÃO DE SALDO
-          </h3>
-          <div className="h-[300px] w-full">
+        <div className="p-8 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
+              <Activity size={24} className="text-primary" />
+            </div>
+            <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs leading-none">FLUXO E EVOLUÇÃO DE SALDO</h3>
+          </div>
+          <div className="h-[350px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={dailyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#333' : '#eee'} vertical={false} />
-                <XAxis dataKey="day" tick={{ fill: theme === 'dark' ? '#fff' : '#000', fontSize: 12 }} axisLine={false} />
-                <YAxis tick={{ fill: theme === 'dark' ? '#fff' : '#000', fontSize: 12 }} axisLine={false} tickFormatter={(v) => `R$ ${v}`} width={80} />
+                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: theme === 'dark' ? '#94a3b8' : '#64748b', fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: theme === 'dark' ? '#94a3b8' : '#64748b', fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} tickFormatter={(v) => `R$ ${v}`} width={80} />
                 <Tooltip
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl">
-                          <p className="text-[10px] font-black text-black dark:text-white uppercase mb-2">DIA {label}</p>
+                        <div className="glass-card p-4 rounded-3xl border border-slate-200/50 dark:border-white/5 shadow-2xl backdrop-blur-xl">
+                          <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">DIA {label}</p>
                           {payload.map((entry: any, index: number) => (
-                            <p key={index} className="text-xs font-bold" style={{ color: entry.fill || entry.stroke }}>
+                            <p key={index} className="text-sm font-black font-mono-num tracking-tight" style={{ color: entry.fill || entry.stroke }}>
                               {entry.name}: {formatCurrency(entry.value)}
                             </p>
                           ))}
@@ -212,28 +215,28 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
                     return null;
                   }}
                 />
-                <Legend verticalAlign="top" height={36} formatter={(v) => <span className="font-bold text-[10px]" style={{ color: theme === 'dark' ? '#fff' : '#000' }}>{v}</span>} />
+                <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: '10px', fontWeight: 800 }} />
                 <Bar dataKey="ENTRADAS" fill="#10b981" barSize={8} radius={[2, 2, 0, 0]} />
                 <Bar dataKey="SAÍDAS" fill="#ef4444" barSize={8} radius={[2, 2, 0, 0]} />
                 <Line type="monotone" dataKey="SALDO" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1', strokeWidth: 0 }} />
               </ComposedChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* CATEGORIAS E PAGAMENTO */}
+          </        {/* CATEGORIAS E PAGAMENTO */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 border border-black dark:border-white rounded-xl">
-            <h3 className="font-bold text-xs mb-6 text-black dark:text-white flex items-center gap-2">
-              <BarChart3 size={16} /> GASTOS POR CATEGORIA
-            </h3>
+          <div className="p-8 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
+                <BarChart3 size={24} className="text-amber-500" />
+              </div>
+              <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs leading-none">GASTOS POR CATEGORIA</h3>
+            </div>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={categoryTotals} layout="vertical">
                   <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={80} tick={{ fill: theme === 'dark' ? '#fff' : '#000', fontSize: 10, fontWeight: 'bold' }} axisLine={false} />
+                  <YAxis dataKey="name" type="category" width={100} tick={{ fill: theme === 'dark' ? '#fff' : '#000', fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }} />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                  <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={20}>
                     {categoryTotals.map((_, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
                   </Bar>
                 </BarChart>
@@ -241,10 +244,13 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
             </div>
           </div>
 
-          <div className="p-6 border border-black dark:border-white rounded-xl">
-            <h3 className="font-bold text-xs mb-6 text-black dark:text-white flex items-center gap-2">
-              <CreditCard size={16} /> MEIOS DE PAGAMENTO
-            </h3>
+          <div className="p-8 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
+                <CreditCard size={24} className="text-primary dark:text-primary-dark" />
+              </div>
+              <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs leading-none">MEIOS DE PAGAMENTO</h3>
+            </div>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -254,38 +260,41 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
                     nameKey="name"
                     innerRadius={60}
                     outerRadius={80}
-                    paddingAngle={5}
+                    paddingAngle={8}
                     label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
                   >
                     {paymentData.map((_, index) => <Cell key={index} fill={COLORS[(index + 2) % COLORS.length]} />)}
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend formatter={(v) => <span className="font-bold text-[10px]" style={{ color: theme === 'dark' ? '#fff' : '#000' }}>{v}</span>} />
+                  <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 800 }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </div>
+          </div>
         </div>
 
         {/* TABELA DE OPERAÇÕES */}
-        <div className="p-6 border border-black dark:border-white rounded-xl overflow-x-auto">
-          <h3 className="font-bold text-xs mb-4 text-black dark:text-white">EXTRATO DE OPERAÇÕES</h3>
-          <table className="w-full text-left text-[11px]">
+        <div className="p-8 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl overflow-x-auto">
+          <h3 className="font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs mb-6">EXTRATO DE OPERAÇÕES</h3>
+          <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b-2 border-black dark:border-white">
-                <th className="py-2 text-black dark:text-white">DATA</th>
-                <th className="py-2 text-black dark:text-white">DESCRIÇÃO</th>
-                <th className="py-2 text-black dark:text-white">CATEGORIA</th>
-                <th className="py-2 text-right text-black dark:text-white">VALOR</th>
+              <tr className="border-b-2 border-slate-200 dark:border-slate-700">
+                <th className="py-3 px-2 font-black text-slate-500 dark:text-slate-400 tracking-widest">DATA</th>
+                <th className="py-3 px-2 font-black text-slate-500 dark:text-slate-400 tracking-widest">DESCRIÇÃO</th>
+                <th className="py-3 px-2 font-black text-slate-500 dark:text-slate-400 tracking-widest">CATEGORIA</th>
+                <th className="py-3 px-2 font-black text-slate-500 dark:text-slate-400 tracking-widest text-right">VALOR</th>
               </tr>
             </thead>
             <tbody>
               {transactions.map((t) => (
-                <tr key={t.id} className="border-b border-black/10 dark:border-white/10">
-                  <td className="py-3 text-black dark:text-white">{formatDateSafe(t.date)}</td>
-                  <td className="py-3 font-bold text-black dark:text-white">{t.description.toUpperCase()}</td>
-                  <td className="py-3 text-black dark:text-white">{t.category.toUpperCase()}</td>
-                  <td className={`py-3 text-right font-black ${t.type === 'INCOME' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                <tr key={t.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                  <td className="py-4 px-2 text-slate-600 dark:text-slate-300 font-semibold">{formatDateSafe(t.date)}</td>
+                  <td className="py-4 px-2 font-black text-slate-900 dark:text-white">{t.description.toUpperCase()}</td>
+                  <td className="py-4 px-2 text-slate-600 dark:text-slate-300 font-semibold">
+                    <span className="px-3 py-1 glass-card border border-slate-200/50 dark:border-white/5 rounded-lg text-[10px] font-black">{t.category.toUpperCase()}</span>
+                  </td>
+                  <td className={`py-4 px-2 text-right font-black font-mono-num ${t.type === 'INCOME' ? 'text-emerald-500' : 'text-rose-500'}`}>
                     {t.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </td>
                 </tr>

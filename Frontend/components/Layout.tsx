@@ -80,30 +80,33 @@ const Layout: React.FC<LayoutProps> = ({
   }, []);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden transition-colors duration-300">
+    <div className="flex h-screen bg-slate-50 dark:bg-surface overflow-hidden transition-colors duration-500 font-sans">
+      {/* OVERLAY MOBILE FOR SIDEBAR (Opcional, se mantiver sidebar no mobile) */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-20 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/50 z-20 md:hidden backdrop-blur-sm transition-opacity"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
+      {/* SIDEBAR DESKTOP */}
       <aside className={`
-        fixed lg:static inset-y-0 left-0 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-30 transform transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        fixed md:static inset-y-0 left-0 w-64 glass dark:glass-card border-r-0 md:border-r border-slate-200/50 dark:border-white/5 z-30 transform transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        flex flex-col h-full shadow-2xl md:shadow-none
       `}>
-        <div className="h-full flex flex-col p-6">
+        <div className="flex flex-col h-full p-6">
           <button
             onClick={() => setCurrentPage('dashboard')}
-            className="flex items-center space-x-2 mb-10 px-2 group hover:opacity-80 transition-all text-left"
+            className="flex items-center space-x-3 mb-10 px-2 group hover:opacity-80 transition-all text-left"
           >
-            <div className="p-2 bg-indigo-600 rounded-lg text-white flex items-center justify-center group-hover:shadow-lg group-hover:shadow-indigo-600/20 transition-all">
+            <div className="p-2.5 bg-gradient-to-br from-primary to-primary-dark rounded-xl text-white flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-all">
               <Wallet size={24} />
             </div>
-            <h1 className="text-xl font-black text-black dark:text-white tracking-tighter leading-none">FinGes App</h1>
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">FinGes</h1>
           </button>
 
-          <nav className="flex-1 space-y-1.5">
+          <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar">
             <SidebarItem
               icon={<LayoutDashboard size={20} />}
               label="Dashboard"
@@ -152,41 +155,47 @@ const Layout: React.FC<LayoutProps> = ({
             )}
           </nav>
 
-          <div className="pt-6 border-t border-slate-100 dark:border-slate-700">
+          <div className="pt-6 border-t border-slate-200/50 dark:border-white/5 mt-auto">
             <button
               onClick={onLogout}
-              className="w-full flex items-center space-x-3 px-4 py-3 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-xl transition-colors"
+              className="w-full flex items-center space-x-3 px-4 py-3 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-all font-bold"
             >
               <div className="flex items-center justify-center">
                 <LogOut size={20} />
               </div>
-              <span className="font-bold text-sm leading-none">Sair da conta</span>
+              <span className="text-sm leading-none">Sair da conta</span>
             </button>
           </div>
         </div>
       </aside>
 
       <main className="flex-1 flex flex-col h-screen overflow-hidden relative">
-        <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 h-16 flex items-center justify-between px-4 lg:px-8 shrink-0 no-print">
-          <button
-            className="p-2 lg:hidden text-slate-950 dark:text-white flex items-center justify-center"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu size={24} />
-          </button>
+        {/* HEADER TOP BAR */}
+        <header className="glass dark:glass border-b-0 md:border-b border-slate-200/50 dark:border-white/5 h-16 md:h-20 flex items-center justify-between px-4 md:px-8 shrink-0 z-10">
+          <div className="flex items-center gap-3">
+            {/* Hamburger para mobile */}
+            <button
+              className="p-2 md:hidden text-slate-800 dark:text-white flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
 
-          <div className="flex-1 hidden lg:flex items-center">
-            <h2 className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-[0.2em] leading-none">
-              {currentPage === 'dashboard' ? 'Visão Geral' :
-                currentPage === 'transactions' ? 'Movimentações e Extrato' :
-                  currentPage === 'recurring' ? 'Contas e Recorrência' :
-                    currentPage === 'reports' ? 'Inteligência de Dados' :
-                      currentPage === 'goals' ? 'Metas e Orçamentos' : 'Configurações do Sistema'}
-            </h2>
-            <RealTimeClock />
+            <div className="hidden md:flex flex-col">
+              <h2 className="text-xs font-black text-primary dark:text-accent uppercase tracking-[0.2em] leading-none mb-1">
+                {currentPage === 'dashboard' ? 'Visão Geral' :
+                  currentPage === 'transactions' ? 'Movimentações e Extrato' :
+                    currentPage === 'recurring' ? 'Contas e Recorrência' :
+                      currentPage === 'reports' ? 'Inteligência de Dados' :
+                        currentPage === 'goals' ? 'Metas e Orçamentos' : 'Configurações'}
+              </h2>
+              <div className="flex items-center text-slate-500 dark:text-slate-400">
+                <RealTimeClock />
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 md:gap-4">
             <NotificationBell
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
@@ -197,45 +206,42 @@ const Layout: React.FC<LayoutProps> = ({
             <div className="relative">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-3 p-1.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-full transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-600"
+                className="flex items-center space-x-3 p-1 rounded-full md:rounded-2xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all border border-transparent hover:border-slate-200 dark:hover:border-white/10"
               >
-                {/* User Profile */}
-                <div className="flex items-center space-x-3 bg-white/50 dark:bg-slate-800/10 p-1.5 pl-4 rounded-2xl border border-white/50 dark:border-white/5 shadow-sm">
-                  <div className="hidden md:flex flex-col items-end">
-                    <span className="text-xs font-black text-black dark:text-white uppercase tracking-tighter">{user.name}</span>
-                    <span className="text-[9px] font-bold text-black dark:text-white opacity-60 uppercase tracking-widest leading-none">Conta Premium</span>
-                  </div>
-                  <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg overflow-hidden">
-                    {user.avatar ? (
-                      <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <UserIcon size={20} />
-                    )}
-                  </div>
+                <div className="hidden md:flex flex-col items-end px-2">
+                  <span className="text-sm font-black text-slate-900 dark:text-white tracking-tight">{user.name}</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">Conta Premium</span>
                 </div>
-                <div className="flex items-center justify-center">
-                  <ChevronDown size={14} className={`text-slate-950 dark:text-white transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full md:rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white shadow-md overflow-hidden ring-2 ring-white dark:ring-card">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <UserIcon size={20} />
+                  )}
+                </div>
+                <div className="hidden md:flex items-center justify-center pr-2">
+                  <ChevronDown size={16} className={`text-slate-500 dark:text-slate-400 transition-transform duration-300 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </div>
               </button>
 
               {userMenuOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl z-20 overflow-hidden ring-1 ring-black/5">
-                    <div className="p-2 border-b border-slate-100 dark:border-slate-700">
+                  <div className="absolute right-0 mt-3 w-56 glass-card border border-slate-200/50 dark:border-white/10 rounded-2xl shadow-2xl z-20 overflow-hidden">
+                    <div className="p-2 border-b border-slate-100/50 dark:border-white/5">
                       <button
                         onClick={() => { setCurrentPage('settings'); setUserMenuOpen(false); }}
-                        className="w-full flex items-center space-x-3 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-950 dark:text-white transition-colors"
+                        className="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 text-slate-900 dark:text-white transition-all"
                       >
-                        <Settings size={16} />
-                        <span className="text-xs font-bold leading-none">Meus Dados</span>
+                        <Settings size={18} />
+                        <span className="text-sm font-bold">Meus Dados</span>
                       </button>
                       <button
                         onClick={() => { onLogout(); setUserMenuOpen(false); }}
-                        className="w-full flex items-center space-x-3 p-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-900/10 text-rose-600 transition-colors mt-1"
+                        className="w-full flex items-center space-x-3 p-3 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-500 transition-all mt-1"
                       >
-                        <LogOut size={16} />
-                        <span className="text-xs font-bold leading-none">Sair do Sistema</span>
+                        <LogOut size={18} />
+                        <span className="text-sm font-bold">Sair do Sistema</span>
                       </button>
                     </div>
                   </div>
@@ -245,17 +251,44 @@ const Layout: React.FC<LayoutProps> = ({
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 lg:p-8 no-scrollbar flex flex-col">
-          <div className="flex-1">
+        {/* MAIN CONTENT AREA */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8 no-scrollbar flex flex-col relative z-0">
+          <div className="flex-1 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {children}
           </div>
 
-          <div className="mt-auto pt-8 pb-4 text-center">
-            <p className="text-[10px] font-bold text-black dark:text-white uppercase tracking-[0.2em] opacity-30">
+          <div className="mt-auto pt-12 pb-4 text-center hidden md:block">
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] opacity-50">
               Desenvolvido por Gabriel Moreira
             </p>
           </div>
         </div>
+
+        {/* BOTTOM NAVIGATION MOBILE */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 glass border-t border-slate-200/50 dark:border-white/5 px-2 py-2 flex justify-around items-center z-40 pb-safe">
+          <button onClick={() => setCurrentPage('dashboard')} className={`flex flex-col items-center p-2 rounded-xl transition-all ${currentPage === 'dashboard' ? 'text-primary dark:text-accent scale-110' : 'text-slate-400 dark:text-slate-500'}`}>
+            <LayoutDashboard size={22} strokeWidth={currentPage === 'dashboard' ? 2.5 : 2} />
+            <span className="text-[9px] font-bold mt-1">Geral</span>
+          </button>
+          <button onClick={() => setCurrentPage('transactions')} className={`flex flex-col items-center p-2 rounded-xl transition-all ${currentPage === 'transactions' ? 'text-primary dark:text-accent scale-110' : 'text-slate-400 dark:text-slate-500'}`}>
+            <ReceiptText size={22} strokeWidth={currentPage === 'transactions' ? 2.5 : 2} />
+            <span className="text-[9px] font-bold mt-1">Extrato</span>
+          </button>
+          
+          {/* Main Action Button for mobile */}
+          <button onClick={() => setCurrentPage('recurring')} className="flex items-center justify-center -mt-6 bg-gradient-to-br from-primary to-primary-dark text-white w-14 h-14 rounded-full shadow-xl ring-4 ring-slate-50 dark:ring-surface transition-transform active:scale-95">
+             <CalendarCheck size={24} />
+          </button>
+
+          <button onClick={() => setCurrentPage('reports')} className={`flex flex-col items-center p-2 rounded-xl transition-all ${currentPage === 'reports' ? 'text-primary dark:text-accent scale-110' : 'text-slate-400 dark:text-slate-500'}`}>
+            <BarChart3 size={22} strokeWidth={currentPage === 'reports' ? 2.5 : 2} />
+            <span className="text-[9px] font-bold mt-1">Análise</span>
+          </button>
+          <button onClick={() => setCurrentPage('goals')} className={`flex flex-col items-center p-2 rounded-xl transition-all ${currentPage === 'goals' ? 'text-primary dark:text-accent scale-110' : 'text-slate-400 dark:text-slate-500'}`}>
+            <Target size={22} strokeWidth={currentPage === 'goals' ? 2.5 : 2} />
+            <span className="text-[9px] font-bold mt-1">Metas</span>
+          </button>
+        </nav>
 
         <AIAssistant
           transactions={transactions}

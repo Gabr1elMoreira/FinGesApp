@@ -145,26 +145,29 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
             {/* ... header ... */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-black dark:text-white tracking-tight leading-none">Minhas Metas</h2>
-                    <p className="text-black dark:text-white text-sm font-medium mt-1 leading-none">Gestão de orçamentos para <b>{monthName} {selectedYear}</b></p>
+                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Minhas Metas</h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm font-bold mt-2 leading-none">Gestão de orçamentos para <b>{monthName} {selectedYear}</b></p>
                 </div>
 
                 <button
                     onClick={openNewGoalModal}
-                    className="bg-violet-600 text-white px-5 py-3 rounded-xl font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-violet-500/30 flex items-center gap-2 hover:bg-violet-700 transition-all active:scale-95"
+                    className="bg-gradient-to-br from-primary to-primary-dark text-white px-6 py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg shadow-primary/30 flex items-center gap-3 transition-all hover:scale-105 active:scale-95 hover:-translate-y-0.5"
                 >
-                    <Plus size={16} /> Nova Meta
+                    <Plus size={20} /> Nova Meta
                 </button>
             </div>
 
             {filteredGoals.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-20 bg-white dark:bg-slate-800 rounded-[32px] border border-slate-100 dark:border-slate-700 text-center">
-                    <div className="p-6 bg-violet-50 dark:bg-violet-900/20 rounded-full mb-6">
-                        <Target size={48} className="text-violet-500" />
+                <div className="flex flex-col items-center justify-center p-20 glass-card rounded-[32px] border border-slate-200/50 dark:border-white/5 text-center">
+                    <div className="p-8 bg-primary/10 rounded-3xl mb-8 shadow-inner">
+                        <Target size={56} className="text-primary dark:text-primary-dark" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-950 dark:text-white mb-2">Nenhuma meta definida</h3>
-                    <p className="text-black dark:text-white opacity-60 max-w-sm mb-8">Defina limites de gastos por categoria ou objetivos de poupança para ter maior controle financeiro.</p>
-                    <button onClick={openNewGoalModal} className="text-violet-600 font-bold uppercase text-xs hover:underline">Criar minha primeira meta</button>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">Nenhuma meta definida</h3>
+                    <p className="text-slate-500 dark:text-slate-400 font-bold max-w-sm mb-10 leading-relaxed">Defina limites de gastos por categoria ou objetivos de poupança para ter maior controle financeiro.</p>
+                    <button onClick={openNewGoalModal} className="text-primary font-black uppercase text-sm tracking-widest hover:text-primary-dark transition-colors flex items-center gap-2 group">
+                        Criar minha primeira meta
+                        <div className="w-6 h-px bg-primary group-hover:w-10 transition-all duration-300"></div>
+                    </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

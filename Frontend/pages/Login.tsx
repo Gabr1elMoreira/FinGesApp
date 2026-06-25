@@ -47,17 +47,17 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center p-4 transition-colors duration-300">
       <div className="w-full max-w-md space-y-8 animate-in fade-in zoom-in duration-500">
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center p-3 bg-indigo-600 rounded-2xl text-white shadow-xl shadow-indigo-200 dark:shadow-none mb-4 animate-bounce">
-            <Wallet size={32} />
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary to-primary-dark rounded-3xl text-white shadow-2xl shadow-primary/30 mb-6 animate-bounce">
+            <Wallet size={40} />
           </div>
-          <h1 className="text-4xl font-extrabold text-black dark:text-white tracking-tight">FinGes App</h1>
-          <p className="text-slate-950 dark:text-white font-medium uppercase text-[10px] tracking-widest">
+          <h1 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">FinGes App</h1>
+          <p className="text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-widest">
             {isRegistering ? 'Crie sua conta agora' : 'Gestão Financeira inteligente para você e sua família'}
           </p>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-[32px] shadow-2xl shadow-slate-200 dark:shadow-none border border-slate-100 dark:border-slate-700">
+        <div className="glass-card p-8 sm:p-10 rounded-[40px] shadow-2xl border border-slate-200/50 dark:border-white/5">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 p-4 rounded-2xl flex items-center gap-3 text-rose-600 dark:text-rose-400 text-xs font-bold animate-in slide-in-from-top-2 uppercase">
@@ -66,40 +66,40 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
               </div>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               {isRegistering && (
-                <div className="space-y-1 animate-in slide-in-from-left-2 duration-300">
-                  <label className="text-xs font-bold text-slate-950 dark:text-white uppercase tracking-widest px-1">Nome Completo</label>
+                <div className="space-y-1.5 animate-in slide-in-from-left-2 duration-300">
+                  <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">Nome Completo</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all font-medium text-slate-700 dark:text-white uppercase"
+                    className="w-full px-5 py-4 glass-card border border-slate-200/50 dark:border-white/5 rounded-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all font-bold text-slate-900 dark:text-white uppercase placeholder:text-slate-400/50 text-sm"
                     placeholder="EX: GABRIEL MOREIRA"
                     required={isRegistering}
                   />
                 </div>
               )}
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-950 dark:text-white uppercase tracking-widest px-1">E-mail</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">E-mail</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all font-medium text-slate-700 dark:text-white"
+                  className="w-full px-5 py-4 glass-card border border-slate-200/50 dark:border-white/5 rounded-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all font-bold text-slate-900 dark:text-white placeholder:text-slate-400/50 text-sm"
                   placeholder="ex: joao@email.com"
                   required
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-950 dark:text-white uppercase tracking-widest px-1">Senha</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">Senha</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all font-medium text-slate-700 dark:text-white"
+                  className="w-full px-5 py-4 glass-card border border-slate-200/50 dark:border-white/5 rounded-2xl focus:ring-2 focus:ring-primary/50 outline-none transition-all font-bold text-slate-900 dark:text-white placeholder:text-slate-400/50 text-sm"
                   placeholder="••••••••"
                   required
                 />
@@ -109,7 +109,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 dark:shadow-none hover:bg-indigo-700 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center space-x-2 uppercase tracking-widest"
+              className="w-full bg-gradient-to-br from-primary to-primary-dark text-white py-4 rounded-2xl font-black shadow-xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center space-x-2 uppercase tracking-widest text-xs"
             >
               {loading ? (
                 <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -122,23 +122,23 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
             </button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 text-center">
+          <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-white/5 text-center">
             <button
               onClick={() => {
                 setIsRegistering(!isRegistering);
                 setError('');
               }}
-              className="text-xs font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tighter hover:underline inline-flex items-center gap-2"
+              className="text-[10px] font-black text-primary dark:text-primary-dark uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors inline-flex items-center gap-2"
             >
               {isRegistering ? <LogIn size={14} /> : <UserPlus size={14} />}
               {isRegistering ? 'Já tenho conta? Voltar ao Login' : 'Não tem conta? Crie uma agora'}
             </button>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 space-y-4">
-            <div className="flex items-center justify-center space-x-2 text-slate-950 dark:text-white">
-              <ShieldCheck size={16} />
-              <span className="text-xs font-medium uppercase tracking-wider">Acesso 100% Seguro</span>
+          <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-white/5 space-y-4">
+            <div className="flex items-center justify-center space-x-2 text-emerald-500">
+              <ShieldCheck size={18} />
+              <span className="text-[10px] font-black uppercase tracking-widest">Acesso 100% Seguro</span>
             </div>
           </div>
         </div>
