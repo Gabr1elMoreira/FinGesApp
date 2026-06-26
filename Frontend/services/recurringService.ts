@@ -45,8 +45,8 @@ export const recurringService = {
     const consumedIds = new Set<string>();
 
     const projections = templates.map((template): ProjectedBill | null => {
-      // Busca transação REAL correspondente neste mês (Paga ou Pendente)
-      const match = transactions.find(t =>
+      // Busca TODAS as transações reais correspondentes neste mês (cobre duplicatas legadas).
+      const matches = transactions.filter(t =>
         t.type === template.type &&
         t.description.toLowerCase() === template.description.toLowerCase() &&
         t.category === template.category &&
@@ -54,14 +54,18 @@ export const recurringService = {
         new Date(t.date).getUTCFullYear() === year
       );
 
-      // Se achou correspondência real, usamos ela (seja paga ou pendente)
-      if (match) {
-        consumedIds.add(match.id);
+      // Se achou correspondência real, consome todas e exibe uma representante
+      // (preferindo a PAGA; senão a mais recente). Assim, duplicatas pendentes antigas
+      // não aparecem separadas nem fazem a conta "voltar a pendente".
+      if (matches.length > 0) {
+        matches.forEach(m => consumedIds.add(m.id));
+        const chosen = matches.find(m => m.isPaid)
+          || [...matches].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
         return {
-          ...match,
-          isPaid: match.isPaid, // Respeita o status real
-          paidId: match.id,
-          paidDate: match.date
+          ...chosen,
+          isPaid: chosen.isPaid,
+          paidId: chosen.id,
+          paidDate: chosen.date
         };
       }
 

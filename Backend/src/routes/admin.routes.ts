@@ -2,7 +2,8 @@ import { Router } from 'express';
 import {
     getStats, getUsers, deleteUser, toggleRole, getAdminAIInsights, sendBroadcast, getLatestBroadcast,
     getAuditLogs, getAnalytics, clearCache, exportDatabase, runIntegrityCheck,
-    getUserDetails, updateUser, resetUserPassword, getHealth, getBroadcasts, revokeBroadcast
+    getUserDetails, updateUser, resetUserPassword, getHealth, getBroadcasts, revokeBroadcast,
+    sendUserEmail, getEmailStatus
 } from '../controllers/admin.controller';
 import { authenticate } from '../middleware/auth';
 import { isAdmin } from '../middleware/admin';
@@ -37,5 +38,9 @@ router.post('/users/:id/reset-password', resetUserPassword);
 // Comunicados (broadcast)
 router.get('/broadcasts', getBroadcasts);
 router.patch('/broadcasts/:id/revoke', revokeBroadcast);
+
+// E-mail (comunicados / atualizações / chamadas)
+router.get('/email/status', getEmailStatus);
+router.post('/email', sendUserEmail);
 
 export default router;

@@ -3,7 +3,7 @@ import {
   Plus, Search, Trash2, Edit2, ArrowUpRight, ArrowDownRight,
   CreditCard, Zap, Banknote, CheckCircle2, Clock, SlidersHorizontal, X
 } from 'lucide-react';
-import { Transaction, User, Theme, Category, PAYMENT_METHODS } from '../types';
+import { Transaction, User, Theme, Category, PAYMENT_METHODS, Account } from '../types';
 import TransactionModal from '../components/TransactionModal';
 import PrivacyValue from '../components/PrivacyValue';
 
@@ -14,9 +14,10 @@ interface TransactionsProps {
   onDelete: (id: string) => Promise<void>;
   user: User;
   theme: Theme;
+  accounts?: Account[];
 }
 
-const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpdate, onDelete, user, theme }) => {
+const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpdate, onDelete, user, theme, accounts = [] }) => {
   const [modalState, setModalState] = useState<{ open: boolean; data: Transaction | null }>({ open: false, data: null });
   const [searchText, setSearchText] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
@@ -423,6 +424,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
         onSave={handleSave}
         initialData={modalState.data}
         enabledCategories={user.settings.enabledCategories}
+        accounts={accounts}
       />
     </div>
   );

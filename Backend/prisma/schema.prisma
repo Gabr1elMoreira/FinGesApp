@@ -22,16 +22,83 @@ model User {
   lastLoginAt       DateTime?
   theme             String          @default("dark")
   enabledCategories String[]
+  preferences       Json?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   monthlyReports    MonthlyReport[]
   transactions      Transaction[]
+  goals             Goal[]
+  accounts          Account[]
+  budgets           Budget[]
+}
+
+model Account {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  type          String        @default("CHECKING") // CHECKING, SAVINGS, WALLET, CREDIT_CARD, INVESTMENT
+  initialBalance Float        @default(0)
+  color         String?
+  archived      Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  transactions  Transaction[]
+
+  @@index([userId])
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  String
+  amount    Float
+  month     Int // 0-11
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, category, month, year])
+  @@index([userId, year, month])
+}
+
+model Goal {
+  id            String         @id @default(uuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  description   String
+  targetAmount  Float
+  currentAmount Float          @default(0)
+  type          String // SPENDING_LIMIT | SAVINGS_TARGET
+  category      String?
+  deadline      DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  contributions Contribution[]
+
+  @@index([userId])
+}
+
+model Contribution {
+  id        String   @id @default(uuid())
+  goalId    String
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  amount    Float
+  date      DateTime
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([goalId])
 }
 
 model Transaction {
   id                  String   @id @default(uuid())
   userId              String
   user                User     @relation(fields: [userId], references: [id])
+  accountId           String?
+  account             Account? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  transferId          String? // agrupa o par origem/destino de uma transferência
   description         String
   amount              Float
   type                String // INCOME, EXPENSE, TRANSFER
@@ -45,6 +112,7 @@ model Transaction {
   updatedAt           DateTime @updatedAt
 
   @@index([userId])
+  @@index([accountId])
 }
 
 enum ReportVerdict {

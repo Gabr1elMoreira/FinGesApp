@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Bell, Sparkles, X, Target, Clock, AlertTriangle, CheckCircle2, TrendingDown, ChevronRight } from 'lucide-react';
 import { getMonthlyReport, MonthlyReport } from '../services/reports';
 import AIAnalysisModal from './AIAnalysisModal';
-import { User, Transaction } from '../types';
-import { storageService } from '../services/storage';
+import { User, Transaction, Goal } from '../types';
 
 interface NotificationBellProps {
   selectedMonth: number;
@@ -11,6 +10,7 @@ interface NotificationBellProps {
   hasTransactions: boolean;
   user: User;
   transactions?: Transaction[];
+  goals?: Goal[];
   onNavigate?: (page: string, date?: string) => void;
 }
 
@@ -31,7 +31,7 @@ type SmartAlert = {
 };
 
 const NotificationBell: React.FC<NotificationBellProps> = ({
-  selectedMonth, selectedYear, hasTransactions, user, transactions = [], onNavigate
+  selectedMonth, selectedYear, hasTransactions, user, transactions = [], goals = [], onNavigate
 }) => {
   const [report, setReport] = useState<MonthlyReport | null>(null);
   const [parsedInsights, setParsedInsights] = useState<ParsedInsight[]>([]);
@@ -81,6 +81,10 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
 
     const fmt = (v: number) => `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     const DAY_MS = 86400000;
+    // Limites de gasto são MENSAIS -> avaliados sobre o mês corrente (tempo real), como os vencimentos.
+    const now = new Date();
+    const curMonth = now.getUTCMonth();
+    const curYear = now.getUTCFullYear();
 
     // Overdue bills (unpaid expenses dated before today) — most important, listed individually.
     const overdue = transactions
@@ -136,8 +140,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
       });
     });
 
-    // Goals near target / exceeded
-    const goals = storageService.getGoals(user.id);
+    // Goals near target / exceeded (vindas do servidor, via prop)
     goals.forEach(g => {
       if (g.type === 'SAVINGS_TARGET' && g.currentAmount !== undefined) {
         const pct = g.targetAmount > 0 ? (g.currentAmount / g.targetAmount) * 100 : 0;
@@ -164,7 +167,11 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
 
       if (g.type === 'SPENDING_LIMIT' && g.category) {
         const spent = transactions
-          .filter(t => t.type === 'EXPENSE' && t.isPaid && t.category === g.category)
+          .filter(t => {
+            if (t.type !== 'EXPENSE' || !t.isPaid || t.category !== g.category) return false;
+            const d = new Date(t.date);
+            return d.getUTCMonth() === curMonth && d.getUTCFullYear() === curYear;
+          })
           .reduce((a, t) => a + t.amount, 0);
         const pct = g.targetAmount > 0 ? (spent / g.targetAmount) * 100 : 0;
         if (pct >= 100) {
@@ -190,7 +197,7 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
     });
 
     return alerts;
-  }, [transactions, user.id, selectedMonth, selectedYear]);
+  }, [transactions, goals, user.id, selectedMonth, selectedYear]);
 
   const handleInsightClick = (id: number) => {
     handleMarkAsRead(id);

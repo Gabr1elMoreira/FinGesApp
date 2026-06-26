@@ -14,3 +14,10 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Registra o service worker (PWA instalável + cache do app shell)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => { /* falha silenciosa */ });
+  });
+}

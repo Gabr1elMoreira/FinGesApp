@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, X, Send, Bot, User as UserIcon, Loader2 } from 'lucide-react';
-import { aiService } from '../services/ai';
+import { apiRequest } from '../services/api';
 import { Transaction, User } from '../types';
 
 interface Message {
@@ -32,21 +32,6 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ transactions, user, selectedM
     }
   }, [messages]);
 
-  const parseResponse = (rawResponse: string) => {
-    const parts = rawResponse.split('[SUGESTOES]');
-    const answer = parts[0].trim();
-    let suggestionsList: string[] = [];
-
-    if (parts.length > 1) {
-      suggestionsList = parts[1]
-        .split('\n')
-        .map(s => s.trim())
-        .filter(s => s.length > 0 && !s.startsWith('['));
-    }
-
-    return { answer, suggestionsList };
-  };
-
   const handleSend = async (customMessage?: string) => {
     const userMessage = customMessage || input.trim();
     if (!userMessage || isLoading) return;
@@ -56,12 +41,19 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ transactions, user, selectedM
     setIsLoading(true);
     setSuggestions([]);
 
-    const rawResponse = await aiService.generateFinancialAdvice(userMessage, transactions, user, selectedMonth, selectedYear);
-    const { answer, suggestionsList } = parseResponse(rawResponse);
-
-    setMessages(prev => [...prev, { role: 'assistant', content: answer }]);
-    setSuggestions(suggestionsList);
-    setIsLoading(false);
+    try {
+      // Chat fundamentado nos dados reais (processado no backend, chave protegida)
+      const res = await apiRequest('/ai/chat', {
+        method: 'POST',
+        body: JSON.stringify({ question: userMessage, month: selectedMonth, year: selectedYear }),
+      });
+      setMessages(prev => [...prev, { role: 'assistant', content: res.answer || 'Não consegui processar agora.' }]);
+      setSuggestions(Array.isArray(res.suggestions) ? res.suggestions : []);
+    } catch (err: any) {
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Estou temporariamente indisponível. Verifique a conexão e tente novamente.' }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -94,7 +86,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ transactions, user, selectedM
         </div>
 
         {/* Mensagens */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar bg-slate-50 dark:bg-slate-900/50">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 no-scrollbar bg-slate-50 dark:bg-slate-900/50">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[85%] flex gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>

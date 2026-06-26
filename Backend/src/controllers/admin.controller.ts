@@ -6,6 +6,7 @@ import { getCache, setCache, invalidateCache, isRedisConnected } from '../servic
 import { generateAdminInsights } from '../services/ai.service';
 import { hashPassword } from '../utils/auth';
 import { AuthRequest } from '../middleware/auth';
+import { isEmailConfigured, sendEmail, buildEmailHtml } from '../services/email.service';
 
 // Resolve o nome do admin autenticado para registrar nos logs de auditoria
 const getActorName = async (req: AuthRequest): Promise<string> => {
@@ -466,6 +467,57 @@ export const getBroadcasts = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ error: 'Erro ao buscar comunicados' });
     }
+};
+
+// Envia e-mail (comunicado/atualização/chamada) para 1 usuário ou um segmento.
+// body: { target: 'user'|'all'|'active'|'inactive', userId?, subject, message }
+export const sendUserEmail = async (req: AuthRequest, res: Response) => {
+    try {
+        const { target, userId, subject, message } = req.body;
+        if (!subject || !message || typeof subject !== 'string' || typeof message !== 'string') {
+            return res.status(400).json({ error: 'Assunto e mensagem são obrigatórios' });
+        }
+        if (!isEmailConfigured()) {
+            return res.status(503).json({ error: 'Envio de e-mail não configurado. Defina RESEND_API_KEY e EMAIL_FROM no backend.' });
+        }
+
+        let recipients: { email: string; name: string }[] = [];
+        if (target === 'user') {
+            if (!userId) return res.status(400).json({ error: 'userId é obrigatório para envio individual' });
+            const u = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
+            if (!u) return res.status(404).json({ error: 'Usuário não encontrado' });
+            recipients = [u];
+        } else {
+            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+            let where: any = {};
+            if (target === 'active') where = { lastLoginAt: { gte: thirtyDaysAgo } };
+            else if (target === 'inactive') where = { OR: [{ lastLoginAt: null }, { lastLoginAt: { lt: thirtyDaysAgo } }] };
+            recipients = await prisma.user.findMany({ where, select: { email: true, name: true } });
+        }
+
+        if (recipients.length === 0) {
+            return res.status(400).json({ error: 'Nenhum destinatário encontrado para este segmento' });
+        }
+
+        const MAX = 300;
+        const capped = recipients.slice(0, MAX);
+        const results = await Promise.allSettled(
+            capped.map(r => sendEmail(r.email, subject, buildEmailHtml(subject, message, r.name)))
+        );
+        const sent = results.filter(r => r.status === 'fulfilled').length;
+        const failed = results.length - sent;
+
+        await emitAuditLog(`Admin enviou e-mail "${subject.slice(0, 40)}" para ${sent} usuário(s)`, failed > 0 ? 'warning' : 'info');
+        res.json({ sent, failed, total: recipients.length, capped: recipients.length > capped.length });
+    } catch (error: any) {
+        console.error('SEND EMAIL ERROR:', error);
+        res.status(500).json({ error: 'Erro ao enviar e-mail: ' + (error?.message || 'desconhecido') });
+    }
+};
+
+// Indica se o envio de e-mail está configurado no servidor
+export const getEmailStatus = async (_req: AuthRequest, res: Response) => {
+    res.json({ configured: isEmailConfigured() });
 };
 
 // Revoga (desativa) um comunicado

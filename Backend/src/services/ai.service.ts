@@ -122,6 +122,117 @@ export const generateAdminInsights = async (stats: any): Promise<string[]> => {
     }
 };
 
+// Extrai UMA transação a partir de linguagem natural ("gastei 50 no mercado no pix").
+export const parseTransactionText = async (text: string, categories: string[], todayISO: string): Promise<any | null> => {
+    if (!apiKey || apiKey === '' || apiKey === 'your_key_here') return null;
+    const ai = new GoogleGenAI({ apiKey });
+
+    const systemInstruction = `Você extrai UMA transação financeira a partir de uma frase em português e responde SOMENTE com JSON válido, sem texto extra.
+Regras:
+- type: "EXPENSE" para gastos (gastei, paguei, comprei, conta) ou "INCOME" para recebimentos (recebi, ganhei, salário).
+- amount: número positivo em reais (ex: 50.0), sem símbolos nem separador de milhar.
+- category: escolha a MAIS provável EXATAMENTE entre estas opções: ${categories.join(' | ')}.
+- paymentMethod: um de CASH, PIX, DEBIT, CREDIT, OTHER. Use PIX se não houver indício.
+- date: formato YYYY-MM-DD. Hoje é ${todayISO}. Entenda "hoje", "ontem", "anteontem".
+- description: curta e clara (ex: "Mercado", "Uber", "Salário").
+- isPaid: true se já ocorreu; false se é conta futura a pagar.
+Responda exatamente: {"description": string, "amount": number, "type": "INCOME"|"EXPENSE", "category": string, "paymentMethod": string, "date": string, "isPaid": boolean}`;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: text,
+            config: { systemInstruction, temperature: 0.1 },
+        });
+        const raw = response.text || '';
+        const match = raw.match(/\{[\s\S]*\}/);
+        if (!match) return null;
+        const parsed = JSON.parse(match[0]);
+        // Garante categoria válida
+        if (parsed.category && !categories.includes(parsed.category)) {
+            const found = categories.find(c => c.toLowerCase() === String(parsed.category).toLowerCase());
+            parsed.category = found || categories[0];
+        }
+        return parsed;
+    } catch (error) {
+        return null;
+    }
+};
+
+// Sugere a categoria mais provável para uma descrição.
+export const suggestCategory = async (description: string, categories: string[]): Promise<string | null> => {
+    if (!apiKey || apiKey === '' || apiKey === 'your_key_here') return null;
+    const ai = new GoogleGenAI({ apiKey });
+
+    const prompt = `Descrição de uma transação: "${description}". Escolha a categoria MAIS provável EXATAMENTE entre: ${categories.join(' | ')}. Responda SOMENTE com o nome exato da categoria, sem mais nada.`;
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: prompt,
+            config: { temperature: 0 },
+        });
+        const out = (response.text || '').trim();
+        const found = categories.find(c => out.toLowerCase().includes(c.toLowerCase()));
+        return found || null;
+    } catch (error) {
+        return null;
+    }
+};
+
+// Chat fundamentado: recebe a pergunta + um contexto financeiro JÁ CALCULADO (números reais)
+// e responde citando os dados reais do usuário, sem inventar valores.
+export const generateChatResponse = async (
+    question: string,
+    userName: string,
+    context: any
+): Promise<{ answer: string; suggestions: string[] }> => {
+    if (!apiKey || apiKey === '' || apiKey === 'your_key_here') {
+        return { answer: 'A IA está indisponível: configure a GEMINI_API_KEY no backend.', suggestions: [] };
+    }
+    const ai = new GoogleGenAI({ apiKey });
+
+    const systemInstruction = `Você é o FinGes AI, assistente financeiro pessoal de ${userName}.
+
+REGRAS (OBRIGATÓRIAS):
+1. Use SOMENTE os números do bloco DADOS FINANCEIROS abaixo. NUNCA invente valores. Se algo não estiver nos dados, diga claramente que não há registro.
+2. Cite valores reais em R$ e compare com médias/meses anteriores e orçamentos quando fizer sentido.
+3. Termine com UMA recomendação prática e acionável.
+4. Português, tom claro e direto. Markdown puro (sem ** ou ###), parágrafos curtos separados por quebra de linha dupla.
+
+DADOS FINANCEIROS (fatos já calculados do usuário):
+${JSON.stringify(context)}
+
+FORMATO DE RESPOSTA: responda APENAS um JSON válido no formato:
+{"answer": "<sua resposta em markdown>", "suggestions": ["pergunta curta 1", "pergunta curta 2", "pergunta curta 3"]}`;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-flash-preview',
+            contents: question,
+            config: {
+                systemInstruction,
+                temperature: 0.3,
+                responseMimeType: 'application/json',
+            },
+        });
+        const raw = response.text || '';
+        const match = raw.match(/\{[\s\S]*\}/);
+        const parsed = match ? JSON.parse(match[0]) : { answer: raw, suggestions: [] };
+        return {
+            answer: parsed.answer || 'Não consegui processar sua análise agora.',
+            suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.slice(0, 3) : [],
+        };
+    } catch (error: any) {
+        const isQuota = error?.message?.includes('429');
+        return {
+            answer: isQuota
+                ? 'Atingi o limite de uso da IA no momento. Tente novamente em 1 minuto.'
+                : 'Estou temporariamente indisponível. Tente novamente em instantes.',
+            suggestions: [],
+        };
+    }
+};
+
 function getFallbackResponse(message: string): AIAnalysisResult {
     return {
         verdict: "STABLE",

@@ -41,20 +41,34 @@ const Recurring: React.FC<RecurringProps> = ({ transactions, onAdd, onUpdate, on
 
   const handleConfirmPayment = async (bill: ProjectedBill) => {
     try {
-      if (bill.id && !bill.id.startsWith('temp-')) {
+      if (isRealBill(bill)) {
+        // Já existe no banco -> apenas marca como pago (persiste)
         await onUpdate(bill.id, { isPaid: true });
       } else {
+        // Projeção -> materializa um lançamento real pago neste mês
         const originalDay = new Date(bill.date).getUTCDate();
         const newDate = new Date(Date.UTC(selectedYear, selectedMonth, originalDay)).toISOString();
         await onAdd({
           description: bill.description, amount: bill.amount, type: bill.type, category: bill.category,
-          paymentMethod: bill.paymentMethod || 'Dinheiro',
-          date: newDate.split('T')[0], isPaid: true, isRecurrent: true,
-          recurrenceFrequency: bill.recurrenceFrequency, userId: user.id
+          paymentMethod: bill.paymentMethod || 'PIX',
+          date: newDate, isPaid: true, isRecurrent: true,
+          recurrenceFrequency: bill.recurrenceFrequency, userId: user.id,
+          accountId: bill.accountId ?? null,
         });
       }
     } catch (err: any) {
       alert("Erro ao confirmar pagamento: " + (err.message || "Verifique os dados."));
+    }
+  };
+
+  // Marca uma conta paga de volta como pendente (apenas para lançamentos reais)
+  const handleUnconfirmPayment = async (bill: ProjectedBill) => {
+    try {
+      if (isRealBill(bill)) {
+        await onUpdate(bill.id, { isPaid: false });
+      }
+    } catch (err: any) {
+      alert("Erro ao reabrir conta: " + (err.message || "Tente novamente."));
     }
   };
 
@@ -78,35 +92,40 @@ const Recurring: React.FC<RecurringProps> = ({ transactions, onAdd, onUpdate, on
     }
   };
 
-  // Exclui no banco. Conta real -> remove o lançamento. Projeção -> remove toda a recorrência.
+  // Exclui no banco refletindo passado/presente/futuro.
+  // Conta recorrente -> remove TODA a série (não "volta"). Conta avulsa -> remove só o lançamento.
   const handleDelete = async (bill: ProjectedBill) => {
     try {
-      if (isRealBill(bill)) {
-        if (!window.confirm(`Excluir "${bill.description}"? Esta ação não pode ser desfeita.`)) return;
-        await onDelete(bill.id);
+      if (bill.isRecurrent) {
+        const matches = transactions.filter(t =>
+          t.isRecurrent &&
+          t.type === bill.type &&
+          t.description.toLowerCase() === bill.description.toLowerCase() &&
+          t.category === bill.category
+        );
+
+        if (matches.length === 0) {
+          alert("Esta conta recorrente ainda não possui lançamentos no banco de dados.");
+          return;
+        }
+
+        if (!window.confirm(
+          `"${bill.description}" é uma conta recorrente.\n\nA exclusão vai remover os ${matches.length} lançamento(s) desta recorrência (passado, presente e futuro) do banco de dados. Esta ação não pode ser desfeita.`
+        )) return;
+
+        for (const m of matches) {
+          await onDelete(m.id);
+        }
         return;
       }
 
-      // Projeção: não existe registro próprio no banco. Remove a série recorrente.
-      const matches = transactions.filter(t =>
-        t.isRecurrent &&
-        t.type === bill.type &&
-        t.description.toLowerCase() === bill.description.toLowerCase() &&
-        t.category === bill.category
-      );
-
-      if (matches.length === 0) {
-        alert("Esta conta ainda não foi lançada neste mês e não possui registro no banco de dados.");
+      // Conta avulsa (não recorrente)
+      if (!isRealBill(bill)) {
+        alert("Esta conta ainda não foi lançada no banco de dados.");
         return;
       }
-
-      if (!window.confirm(
-        `"${bill.description}" é uma conta recorrente. Deseja remover TODOS os ${matches.length} lançamento(s) desta recorrência? Esta ação não pode ser desfeita.`
-      )) return;
-
-      for (const m of matches) {
-        await onDelete(m.id);
-      }
+      if (!window.confirm(`Excluir "${bill.description}"? Esta ação não pode ser desfeita.`)) return;
+      await onDelete(bill.id);
     } catch (err: any) {
       alert("Erro ao excluir: " + (err.message || "Tente novamente."));
     }
@@ -275,7 +294,7 @@ const Recurring: React.FC<RecurringProps> = ({ transactions, onAdd, onUpdate, on
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
-                      {!bill.isPaid && (
+                      {!bill.isPaid ? (
                         <button
                           onClick={() => handleConfirmPayment(bill)}
                           className={`px-4 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all shadow-sm flex items-center gap-1.5 active:scale-95 text-white ${
@@ -286,6 +305,15 @@ const Recurring: React.FC<RecurringProps> = ({ transactions, onAdd, onUpdate, on
                         >
                           <MousePointerClick size={13} />
                           {isIncome ? 'Confirmar' : 'Pago'}
+                        </button>
+                      ) : isRealBill(bill) && (
+                        <button
+                          onClick={() => handleUnconfirmPayment(bill)}
+                          title="Reabrir (marcar como pendente)"
+                          className="px-3 py-2.5 rounded-xl text-[11px] font-bold uppercase tracking-wide transition-all border border-slate-200/70 dark:border-white/[0.06] text-slate-400 dark:text-[#e8eaf3] hover:text-amber-500 hover:border-amber-500/30 hover:bg-amber-500/[0.06] active:scale-95 flex items-center gap-1.5"
+                        >
+                          <RefreshCcw size={13} />
+                          Reabrir
                         </button>
                       )}
                       <button

@@ -163,7 +163,7 @@
   /* ===== SECTION HEADER ===== */
   .section-label {
     @apply text-[10px] font-bold uppercase tracking-[0.2em];
-    color: #64748b;
+    color: #0f172a;
   }
   .dark .section-label { color: #e8eaf3; }
 
@@ -176,4 +176,42 @@
 
   /* ===== SAFE AREA ===== */
   .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+
+/* ===== MODO CLARO: textos cinza ficam pretos (mais destaque/contraste) =====
+   Escopado a html:not(.dark) para não afetar o modo escuro. A especificidade
+   (html + classe) vence as utilities do Tailwind. Não toca em placeholders. */
+html:not(.dark) .text-slate-400,
+html:not(.dark) .text-slate-500,
+html:not(.dark) .text-slate-600 {
+  color: #0f172a;
+}
+
+/* ===== TOQUE / FOCO =====
+   Remove o "quadrado/contorno preto" que aparecia ao tocar em gráficos e botões no
+   celular, SEM perder o anel de foco do teclado (acessibilidade preservada). */
+html { -webkit-tap-highlight-color: transparent; }
+
+/* Foco vindo de toque/clique não mostra contorno; foco por teclado (focus-visible) mantém. */
+:focus:not(:focus-visible) { outline: none; }
+
+/* Recharts: nunca contornar o gráfico nem seus elementos (clique/toque/foco),
+   em qualquer dispositivo. Regra incondicional cobre o SVG, o wrapper e todos os filhos
+   (fatias da pizza, barras, legenda) — é o que gerava o "quadrado preto" no desktop. */
+.recharts-responsive-container,
+.recharts-responsive-container *,
+.recharts-wrapper,
+.recharts-wrapper *,
+.recharts-surface,
+.recharts-surface * {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* O wrapper do Recharts recebe tabindex e ganhava o contorno ao ser focado. */
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface:focus,
+.recharts-surface:focus-visible {
+  outline: none !important;
 }

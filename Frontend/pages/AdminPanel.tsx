@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { apiRequest } from '../services/api';
 import { supabase } from '../services/supabase';
 import * as XLSX from 'xlsx';
-import { Trash2, Shield, User as UserIcon, Activity, Database, Cpu, Layers, Search, Filter, ArrowUpRight, ArrowDownRight, Zap, AlertTriangle, Terminal, Globe, Server, Download, Bell, RefreshCw, CheckCircle2, TrendingUp, CreditCard, Loader2, X, Eye, Send, Award, Power, Wifi } from 'lucide-react';
+import { Trash2, Shield, User as UserIcon, Activity, Database, Cpu, Layers, Search, Filter, ArrowUpRight, ArrowDownRight, Zap, AlertTriangle, Terminal, Globe, Server, Download, Bell, RefreshCw, CheckCircle2, TrendingUp, CreditCard, Loader2, X, Eye, Send, Award, Power, Wifi, Mail } from 'lucide-react';
 import { User } from '../types';
 import AdminUserDetailModal from '../components/AdminUserDetailModal';
 
@@ -76,6 +76,12 @@ const AdminPanel: React.FC = () => {
     const [broadcastModal, setBroadcastModal] = useState(false);
     const [bcTitle, setBcTitle] = useState('COMUNICADO ADMINISTRATIVO');
     const [bcMessage, setBcMessage] = useState('');
+    // E-mail (comunicado/atualização/chamada)
+    const [emailModal, setEmailModal] = useState(false);
+    const [emailTarget, setEmailTarget] = useState<'user' | 'all' | 'active' | 'inactive'>('all');
+    const [emailUser, setEmailUser] = useState<{ id: string; name: string } | null>(null);
+    const [emailSubject, setEmailSubject] = useState('');
+    const [emailMessage, setEmailMessage] = useState('');
     const [logs, setLogs] = useState(() => {
         try {
             const savedLogs = localStorage.getItem('admin_audit_logs');
@@ -222,6 +228,32 @@ const AdminPanel: React.FC = () => {
         } catch (error: any) {
             console.error(error);
             alert(error.message || 'Erro ao alterar permissão');
+        }
+    };
+
+    // Abre o compositor de e-mail (para um usuário específico ou um segmento)
+    const openEmail = (user?: { id: string; name: string }) => {
+        if (user) { setEmailUser(user); setEmailTarget('user'); }
+        else { setEmailUser(null); setEmailTarget('all'); }
+        setEmailSubject('');
+        setEmailMessage('');
+        setEmailModal(true);
+    };
+
+    const handleSendEmail = async () => {
+        if (!emailSubject.trim() || !emailMessage.trim()) { alert('Preencha assunto e mensagem.'); return; }
+        setBusyAction('email');
+        try {
+            const body: any = { target: emailTarget, subject: emailSubject.trim(), message: emailMessage.trim() };
+            if (emailTarget === 'user' && emailUser) body.userId = emailUser.id;
+            const res = await apiRequest('/admin/email', { method: 'POST', body: JSON.stringify(body) });
+            setLogs(prev => [{ msg: `E-mail "${emailSubject.trim().substring(0, 30)}" enviado para ${res.sent} usuário(s)`, time: 'Agora', type: res.failed > 0 ? 'warning' : 'success' }, ...prev].slice(0, 12));
+            alert(`E-mail enviado: ${res.sent} com sucesso${res.failed > 0 ? `, ${res.failed} falharam` : ''}${res.capped ? ' (limite de 300 por envio atingido)' : ''}.`);
+            setEmailModal(false);
+        } catch (error: any) {
+            alert('Erro ao enviar e-mail: ' + (error.message || 'verifique se RESEND_API_KEY está configurada no backend.'));
+        } finally {
+            setBusyAction(null);
         }
     };
 
@@ -513,6 +545,11 @@ const AdminPanel: React.FC = () => {
                                         <RefreshCw className={`mb-3 transition-transform text-white ${busyAction === 'cache' ? 'animate-spin' : 'group-hover:-translate-y-1'}`} size={24} />
                                         <p className="text-sm font-black leading-none text-white">Limpar Cache</p>
                                         <p className="text-[10px] font-bold opacity-70 mt-1.5 uppercase text-indigo-100 tracking-widest">Stats & Analytics</p>
+                                    </button>
+                                    <button onClick={() => openEmail()} className="glass-card bg-white/10 hover:bg-white/20 p-5 rounded-3xl text-left transition-all border border-white/10 group col-span-2">
+                                        <Mail className="mb-3 group-hover:-translate-y-1 transition-transform text-white" size={24} />
+                                        <p className="text-sm font-black leading-none text-white">Enviar E-mail</p>
+                                        <p className="text-[10px] font-bold opacity-70 mt-1.5 uppercase text-indigo-100 tracking-widest">Comunicado / Atualização</p>
                                     </button>
                                 </div>
                             </div>
@@ -928,6 +965,7 @@ const AdminPanel: React.FC = () => {
                 onChanged={() => { loadData(); loadAnalytics(); }}
                 onDelete={(id) => { handleDeleteUser(id); setDetailUserId(null); }}
                 onToggleRole={(id) => handleToggleRole(id)}
+                onEmail={(id, name) => { setDetailUserId(null); openEmail({ id, name }); }}
             />
 
             {/* Modal de comunicado (broadcast) */}
@@ -940,7 +978,7 @@ const AdminPanel: React.FC = () => {
                             <button onClick={() => setBroadcastModal(false)} className="p-2 rounded-xl hover:bg-white/15 transition-colors"><X size={20} /></button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+                        <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5">
                             <div>
                                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-[#e8eaf3] mb-2 block">Título</label>
                                 <input
@@ -992,6 +1030,82 @@ const AdminPanel: React.FC = () => {
                                     </div>
                                 </div>
                             )}
+                            <div className="pb-safe" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de e-mail (comunicado / atualização / chamada) */}
+            {emailModal && (
+                <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4">
+                    <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onClick={() => setEmailModal(false)} />
+                    <div className="relative w-full max-w-lg bg-white dark:bg-[#1c1e2f] border-t sm:border border-slate-200/70 dark:border-white/[0.07] rounded-t-[28px] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] animate-in slide-in-from-bottom duration-300">
+                        <div className="shrink-0 px-6 py-5 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between bg-gradient-to-br from-blue-600 to-blue-700 text-white">
+                            <h3 className="text-lg font-black tracking-tight flex items-center gap-2"><Mail size={18} /> Enviar E-mail</h3>
+                            <button onClick={() => setEmailModal(false)} className="p-2 rounded-xl hover:bg-white/15 transition-colors"><X size={20} /></button>
+                        </div>
+
+                        <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5">
+                            {/* Destinatário */}
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-[#e8eaf3] mb-2 block">Para</label>
+                                {emailTarget === 'user' && emailUser ? (
+                                    <div className="px-4 py-3 rounded-xl bg-slate-100 dark:bg-[#191b29] border border-slate-200 dark:border-white/[0.07] text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                        <UserIcon size={15} className="text-blue-500" /> {emailUser.name}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-wrap gap-2">
+                                        {([
+                                            { v: 'all', label: 'Todos' },
+                                            { v: 'active', label: 'Ativos (30d)' },
+                                            { v: 'inactive', label: 'Inativos (30d+)' },
+                                        ] as const).map(opt => (
+                                            <button
+                                                key={opt.v}
+                                                onClick={() => setEmailTarget(opt.v)}
+                                                className={`px-4 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${emailTarget === opt.v ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'bg-slate-100 dark:bg-[#191b29] text-slate-500 dark:text-[#e8eaf3] hover:text-slate-900 dark:hover:text-white'}`}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-[#e8eaf3] mb-2 block">Assunto</label>
+                                <input
+                                    value={emailSubject}
+                                    onChange={e => setEmailSubject(e.target.value)}
+                                    placeholder="Ex: Nova atualização disponível no FinGes!"
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-[#191b29] border border-slate-200 dark:border-white/[0.07] text-slate-900 dark:text-white font-semibold text-sm outline-none focus:border-blue-500/50"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-[#e8eaf3] mb-2 block">Mensagem</label>
+                                <textarea
+                                    value={emailMessage}
+                                    onChange={e => setEmailMessage(e.target.value)}
+                                    rows={5}
+                                    placeholder="Ex: Lançamos novidades no app! Volte e confira as melhorias..."
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-100 dark:bg-[#191b29] border border-slate-200 dark:border-white/[0.07] text-slate-900 dark:text-white font-medium text-sm outline-none focus:border-blue-500/50 resize-none"
+                                />
+                            </div>
+
+                            <p className="text-[11px] text-slate-400 dark:text-[#9aa0c0] leading-relaxed">
+                                O e-mail é enviado com a identidade do FinGes para o(s) endereço(s) cadastrado(s). Requer <code className="font-mono">RESEND_API_KEY</code> configurada no backend.
+                            </p>
+
+                            <button
+                                onClick={handleSendEmail}
+                                disabled={busyAction === 'email'}
+                                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-black uppercase text-[11px] tracking-widest hover:shadow-lg hover:shadow-blue-500/30 transition-all disabled:opacity-50"
+                            >
+                                {busyAction === 'email' ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                                Enviar
+                            </button>
                             <div className="pb-safe" />
                         </div>
                     </div>

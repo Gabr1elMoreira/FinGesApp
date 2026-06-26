@@ -13,67 +13,16 @@ const transactionSchema = z.object({
     isPaid: z.boolean().optional(), // NOVO CAMPO
     isRecurrent: z.boolean().optional(),
     recurrenceFrequency: z.string().optional(),
+    accountId: z.string().optional().nullable(),
 });
-
-// Helper to process recurrence
-const processRecurrentTransactions = async (userId: string) => {
-    const transactions = await prisma.transaction.findMany({
-        where: { userId, isRecurrent: true },
-    });
-
-    const now = new Date();
-    const newEntries = [];
-
-    for (const t of transactions) {
-        if (t.recurrenceFrequency === 'NONE') continue;
-
-        const lastDate = new Date(t.date);
-        let nextDate = new Date(lastDate);
-
-        if (t.recurrenceFrequency === 'MONTHLY') {
-            nextDate.setMonth(nextDate.getMonth() + 1);
-        } else if (t.recurrenceFrequency === 'WEEKLY') {
-            nextDate.setDate(nextDate.getDate() + 7);
-        } else if (t.recurrenceFrequency === 'YEARLY') {
-            nextDate.setFullYear(nextDate.getFullYear() + 1);
-        }
-
-        if (nextDate <= now) {
-            const exists = await prisma.transaction.findFirst({
-                where: {
-                    userId,
-                    description: t.description,
-                    date: nextDate,
-                },
-            });
-
-            if (!exists) {
-                newEntries.push({
-                    userId,
-                    description: t.description,
-                    amount: t.amount,
-                    type: t.type,
-                    category: t.category,
-                    paymentMethod: t.paymentMethod,
-                    date: nextDate,
-                    isPaid: t.type === 'INCOME', // Se for Receita nasce paga, se for Despesa nasce pendente
-                    isRecurrent: true,
-                    recurrenceFrequency: t.recurrenceFrequency,
-                });
-            }
-        }
-    }
-
-    if (newEntries.length > 0) {
-        await prisma.transaction.createMany({ data: newEntries });
-    }
-};
 
 export const getTransactions = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.user!.userId;
-        await processRecurrentTransactions(userId);
 
+        // Recorrência é projetada no frontend (recurringService) e materializada sob demanda
+        // ao confirmar pagamento/edição. Não geramos linhas automaticamente aqui — isso causava
+        // duplicatas, contas "voltando" após exclusão e status "pendente" reaparecendo após pago.
         const transactions = await prisma.transaction.findMany({
             where: { userId },
             orderBy: { date: 'desc' },

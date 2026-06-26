@@ -8,6 +8,10 @@ import transactionRoutes from './routes/transaction.routes';
 import userRoutes from './routes/user.routes';
 import adminRoutes from './routes/admin.routes';
 import reportRoutes from './routes/report.routes';
+import goalRoutes from './routes/goal.routes';
+import budgetRoutes from './routes/budget.routes';
+import accountRoutes from './routes/account.routes';
+import aiRoutes from './routes/ai.routes';
 
 const app = express();
 
@@ -32,5 +36,9 @@ app.use('/transactions', transactionRoutes);
 app.use('/users', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/reports', reportRoutes);
+app.use('/goals', goalRoutes);
+app.use('/budgets', budgetRoutes);
+app.use('/accounts', accountRoutes);
+app.use('/ai', aiRoutes);
 
 export { app };

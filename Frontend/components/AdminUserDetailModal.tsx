@@ -11,6 +11,7 @@ interface AdminUserDetailModalProps {
     onChanged: () => void; // recarrega lista/analytics após mutações
     onDelete: (id: string) => void; // delega a exclusão (com confirmação) ao pai
     onToggleRole: (id: string) => void;
+    onEmail?: (id: string, name: string) => void; // abre o compositor de e-mail para este usuário
 }
 
 interface UserDetail {
@@ -31,7 +32,7 @@ const fmtDate = (iso?: string) => {
     return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 };
 
-const AdminUserDetailModal: React.FC<AdminUserDetailModalProps> = ({ userId, onClose, onChanged, onDelete, onToggleRole }) => {
+const AdminUserDetailModal: React.FC<AdminUserDetailModalProps> = ({ userId, onClose, onChanged, onDelete, onToggleRole, onEmail }) => {
     const [data, setData] = useState<UserDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
@@ -118,7 +119,7 @@ const AdminUserDetailModal: React.FC<AdminUserDetailModalProps> = ({ userId, onC
                     </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-6">
                     {loading ? (
                         <div className="flex items-center justify-center py-16">
                             <Loader2 size={28} className="animate-spin text-primary" />
@@ -263,10 +264,15 @@ const AdminUserDetailModal: React.FC<AdminUserDetailModalProps> = ({ userId, onC
 
                 {/* Ações */}
                 {data && !editing && (
-                    <div className="shrink-0 border-t border-slate-100 dark:border-white/[0.06] p-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <div className="shrink-0 border-t border-slate-100 dark:border-white/[0.06] p-4 grid grid-cols-2 sm:grid-cols-5 gap-2">
                         <button onClick={() => setEditing(true)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-[#e8eaf3] font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-colors">
                             <Edit2 size={14} /> Editar
                         </button>
+                        {onEmail && (
+                            <button onClick={() => onEmail(data.user.id, data.user.name)} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 font-black uppercase text-[10px] tracking-widest hover:bg-blue-500/20 transition-colors">
+                                <Mail size={14} /> E-mail
+                            </button>
+                        )}
                         <button onClick={handleResetPassword} disabled={busy === 'reset'} className="flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 font-black uppercase text-[10px] tracking-widest hover:bg-amber-500/20 transition-colors disabled:opacity-50">
                             {busy === 'reset' ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />} Senha
                         </button>

@@ -4,7 +4,8 @@ import prisma from '../prisma/client';
 import { z } from 'zod';
 
 const settingsSchema = z.object({
-    enabledCategories: z.array(z.string()),
+    enabledCategories: z.array(z.string()).optional(),
+    preferences: z.record(z.any()).optional(),
 });
 
 const profileSchema = z.object({
@@ -17,15 +18,30 @@ const profileSchema = z.object({
 export const updateSettings = async (req: AuthRequest, res: Response) => {
     try {
         const userId = req.user!.userId;
-        const { enabledCategories } = settingsSchema.parse(req.body);
+        const parsed = settingsSchema.parse(req.body);
+
+        const data: any = {};
+        if (parsed.enabledCategories !== undefined) data.enabledCategories = parsed.enabledCategories;
+
+        // Mescla preferências novas com as existentes (não sobrescreve tudo)
+        if (parsed.preferences !== undefined) {
+            const current = await prisma.user.findUnique({ where: { id: userId }, select: { preferences: true } });
+            const merged = { ...(current?.preferences as object || {}), ...parsed.preferences };
+            data.preferences = merged;
+        }
+
+        if (Object.keys(data).length === 0) {
+            return res.status(400).json({ error: 'Nenhum dado para atualizar' });
+        }
 
         const updatedUser = await prisma.user.update({
             where: { id: userId },
-            data: { enabledCategories },
+            data,
         });
 
         res.json({
-            enabledCategories: updatedUser.enabledCategories
+            enabledCategories: updatedUser.enabledCategories,
+            preferences: updatedUser.preferences ?? null,
         });
     } catch (error) {
         res.status(400).json({ error: 'Failed to update settings' });

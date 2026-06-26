@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard, ReceiptText, BarChart3, Settings, LogOut, Menu,
   Wallet, ChevronDown, CalendarCheck, Target, User as UserIcon, Shield, X,
-  CalendarDays, GitCompareArrows, Search
+  CalendarDays, GitCompareArrows, Search, Plus
 } from 'lucide-react';
-import { User, Theme, Transaction } from '../types';
+import { User, Theme, Transaction, Goal } from '../types';
 import { storageService } from '../services/storage';
 import AIAssistant from './AIAssistant';
 import NotificationBell from './NotificationBell';
@@ -63,6 +63,7 @@ const PAGE_LABELS: Record<string, string> = {
   admin: 'Admin',
   calendar: 'Calendário',
   comparison: 'Comparação',
+  accounts: 'Carteiras',
 };
 
 interface LayoutProps {
@@ -74,6 +75,7 @@ interface LayoutProps {
   onSwitchUser: (user: User) => void;
   theme: Theme;
   transactions: Transaction[];
+  goals?: Goal[];
   selectedMonth: number;
   selectedYear: number;
   setSelectedMonth?: (month: number) => void;
@@ -83,7 +85,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({
   children, currentPage, setCurrentPage, user, onLogout, onSwitchUser,
-  theme, transactions, selectedMonth, selectedYear, setSelectedMonth, setSelectedYear, onFocusMode
+  theme, transactions, goals = [], selectedMonth, selectedYear, setSelectedMonth, setSelectedYear, onFocusMode
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -122,6 +124,7 @@ const Layout: React.FC<LayoutProps> = ({
     { id: 'dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
     { id: 'transactions', icon: <ReceiptText size={18} />, label: 'Transações' },
     { id: 'recurring', icon: <CalendarCheck size={18} />, label: 'Contas' },
+    { id: 'accounts', icon: <Wallet size={18} />, label: 'Carteiras' },
     { id: 'reports', icon: <BarChart3 size={18} />, label: 'Relatórios' },
     { id: 'goals', icon: <Target size={18} />, label: 'Metas' },
     { id: 'calendar', icon: <CalendarDays size={18} />, label: 'Calendário' },
@@ -131,8 +134,8 @@ const Layout: React.FC<LayoutProps> = ({
 
   const mobileNavItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Geral' },
-    { id: 'transactions', icon: ReceiptText, label: 'Extrato' },
-    { id: 'recurring', icon: CalendarCheck, label: 'Contas', fab: true },
+    { id: 'recurring', icon: CalendarCheck, label: 'Contas' },
+    { id: 'transactions', icon: Plus, label: 'Lançar', fab: true },
     { id: 'reports', icon: BarChart3, label: 'Análise' },
     { id: 'goals', icon: Target, label: 'Metas' },
   ];
@@ -313,6 +316,7 @@ const Layout: React.FC<LayoutProps> = ({
               hasTransactions={transactions.length > 0}
               user={user}
               transactions={transactions}
+              goals={goals}
               onNavigate={handleAlertNavigate}
             />
 

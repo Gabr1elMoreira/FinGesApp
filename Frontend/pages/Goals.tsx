@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Target, PiggyBank, TrendingDown } from 'lucide-react';
-import { storageService } from '../services/storage';
 import { Goal, Transaction, User, Theme } from '../types';
 import GoalCard from '../components/GoalCard';
 import GoalModal from '../components/GoalModal';
 import ContributionModal from '../components/ContributionModal';
-import { v4 as uuidv4 } from 'uuid';
+import BudgetSection from '../components/BudgetSection';
 
 interface GoalsProps {
   transactions: Transaction[];
@@ -13,18 +12,17 @@ interface GoalsProps {
   theme: Theme;
   selectedMonth: number;
   selectedYear: number;
+  goals: Goal[];
+  onSaveGoal: (data: Omit<Goal, 'id' | 'createdAt'>, editingId?: string) => Promise<void>;
+  onDeleteGoal: (id: string) => Promise<void>;
+  onAddContribution: (goalId: string, amount: number, date: string, note: string) => Promise<void>;
 }
 
-const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth, selectedYear }) => {
-  const [goals, setGoals] = useState<Goal[]>([]);
+const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth, selectedYear, goals, onSaveGoal, onDeleteGoal, onAddContribution }) => {
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [isContributionModalOpen, setIsContributionModalOpen] = useState(false);
   const [contributionGoal, setContributionGoal] = useState<Goal | null>(null);
-
-  useEffect(() => {
-    if (user) setGoals(storageService.getGoals(user.id));
-  }, [user]);
 
   const categorySpending = useMemo(() => {
     const spending: Record<string, number> = {};
@@ -37,40 +35,32 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
     return spending;
   }, [transactions, selectedMonth, selectedYear]);
 
-  const handleSaveGoal = (newGoalData: Omit<Goal, 'id' | 'createdAt'>) => {
-    const newGoal: Goal = {
-      ...newGoalData,
-      id: editingGoal ? editingGoal.id : uuidv4(),
-      createdAt: editingGoal ? editingGoal.createdAt : new Date().toISOString(),
-      contributions: editingGoal ? editingGoal.contributions : [],
-      currentAmount: editingGoal ? editingGoal.currentAmount : newGoalData.currentAmount
-    };
-    storageService.saveGoal(newGoal);
-    if (editingGoal) {
-      setGoals(prev => prev.map(g => g.id === newGoal.id ? newGoal : g));
-    } else {
-      setGoals(prev => [...prev, newGoal]);
+  const handleSaveGoal = async (newGoalData: Omit<Goal, 'id' | 'createdAt'>) => {
+    try {
+      await onSaveGoal(newGoalData, editingGoal?.id);
+      setEditingGoal(null);
+    } catch (e: any) {
+      alert('Erro ao salvar meta: ' + (e.message || 'tente novamente. O backend pode precisar de redeploy.'));
     }
-    setEditingGoal(null);
   };
 
-  const handleDeleteGoal = (id: string) => {
+  const handleDeleteGoal = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir esta meta?')) {
-      storageService.deleteGoal(id);
-      setGoals(prev => prev.filter(g => g.id !== id));
+      try {
+        await onDeleteGoal(id);
+      } catch (e: any) {
+        alert('Erro ao excluir meta: ' + (e.message || 'tente novamente.'));
+      }
     }
   };
 
-  const handleAddContribution = (amount: number, date: string, note: string) => {
+  const handleAddContribution = async (amount: number, date: string, note: string) => {
     if (!contributionGoal) return;
-    const newContribution = { id: uuidv4(), amount, date, note };
-    const updatedGoal: Goal = {
-      ...contributionGoal,
-      contributions: [...(contributionGoal.contributions || []), newContribution],
-      currentAmount: (contributionGoal.currentAmount || 0) + amount
-    };
-    storageService.saveGoal(updatedGoal);
-    setGoals(prev => prev.map(g => g.id === updatedGoal.id ? updatedGoal : g));
+    try {
+      await onAddContribution(contributionGoal.id, amount, date, note);
+    } catch (e: any) {
+      alert('Erro ao adicionar aporte: ' + (e.message || 'tente novamente.'));
+    }
   };
 
   const filteredGoals = useMemo(() => {
@@ -196,6 +186,15 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
           )}
         </div>
       )}
+
+      {/* Orçamentos do mês (persistidos no banco) */}
+      <BudgetSection
+        user={user}
+        transactions={transactions}
+        selectedMonth={selectedMonth}
+        selectedYear={selectedYear}
+        privacyMode={privacyMode}
+      />
 
       <GoalModal
         isOpen={isGoalModalOpen}

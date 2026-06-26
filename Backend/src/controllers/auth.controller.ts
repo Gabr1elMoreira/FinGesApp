@@ -104,7 +104,8 @@ export const login = async (req: Request, res: Response) => {
                 avatar: user.avatar || '',
                 role: user.role, // Retorna a ROLE para o frontend saber
                 settings: {
-                    enabledCategories: user.enabledCategories
+                    enabledCategories: user.enabledCategories,
+                    preferences: user.preferences ?? null
                 }
             }
         });
@@ -122,7 +123,7 @@ export const getMe = async (req: AuthRequest, res: Response) => {
         if (!req.user) return res.status(401).json({ error: "NÃO AUTORIZADO" });
         const user = await prisma.user.findUnique({
             where: { id: req.user.userId },
-            select: { id: true, name: true, email: true, avatar: true, enabledCategories: true, role: true }
+            select: { id: true, name: true, email: true, avatar: true, enabledCategories: true, role: true, preferences: true }
 
         });
 
@@ -135,7 +136,8 @@ export const getMe = async (req: AuthRequest, res: Response) => {
             avatar: user.avatar || '',
             role: user.role,
             settings: {
-                enabledCategories: user.enabledCategories
+                enabledCategories: user.enabledCategories,
+                preferences: user.preferences ?? null
             }
 
         });

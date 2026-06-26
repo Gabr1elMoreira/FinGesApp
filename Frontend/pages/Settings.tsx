@@ -138,13 +138,21 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
     }
   };
 
+  // Persiste preferências no backend (coluna User.preferences). O backend mescla com as existentes.
+  const persistPreferences = async (partial: Record<string, any>) => {
+    try {
+      await apiRequest('/users/settings', { method: 'PUT', body: JSON.stringify({ preferences: partial }) });
+    } catch (err) {
+      console.error('Erro ao salvar preferências no servidor:', err);
+    }
+  };
+
   const togglePreference = async (key: 'privacyMode', value: boolean) => {
     const newPrefs = { ...user.settings.preferences, [key]: value };
     const updatedUser = { ...user, settings: { ...user.settings, preferences: newPrefs } };
     setUser(updatedUser);
     storageService.saveActiveUser(updatedUser);
-    // Nota: O backend atualmente só salva enabledCategories no updateSettings.
-    // Se precisarmos salvar outras preferências lá, teríamos que atualizar o schema e controller.
+    persistPreferences({ [key]: value });
   };
 
   const toggleNotification = async (key: 'bills' | 'goals' | 'weekly') => {
@@ -154,6 +162,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
     const updatedUser = { ...user, settings: { ...user.settings, preferences: newPrefs } };
     setUser(updatedUser);
     storageService.saveActiveUser(updatedUser);
+    persistPreferences({ notifications: newNotifs });
   };
 
   const handleExportData = async () => {
@@ -403,6 +412,36 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                 >
                   <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform shadow-md ${user.settings.preferences?.privacyMode ? 'translate-x-6' : 'translate-x-0'}`} />
                 </button>
+              </div>
+            </div>
+
+            {/* Notifications */}
+            <div className="glass-card p-8 rounded-[32px] border border-slate-200/50 dark:border-white/5 space-y-6">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2 tracking-tight">
+                <Bell size={24} className="text-amber-500" /> Notificações
+              </h3>
+              <div className="space-y-3">
+                {([
+                  { key: 'bills', label: 'Contas a vencer', desc: 'Alertas de contas próximas do vencimento e vencidas' },
+                  { key: 'goals', label: 'Metas e limites', desc: 'Avisos quando metas chegam perto ou limites são excedidos' },
+                  { key: 'weekly', label: 'Resumo semanal', desc: 'Receba um resumo do seu progresso financeiro' },
+                ] as const).map(item => {
+                  const enabled = user.settings.preferences?.notifications?.[item.key] ?? true;
+                  return (
+                    <div key={item.key} className="flex items-center justify-between p-5 glass-card rounded-2xl border border-slate-200/50 dark:border-white/5">
+                      <div className="min-w-0 pr-3">
+                        <h4 className="font-black text-slate-900 dark:text-white text-sm tracking-tight">{item.label}</h4>
+                        <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-bold mt-0.5">{item.desc}</p>
+                      </div>
+                      <button
+                        onClick={() => toggleNotification(item.key)}
+                        className={`w-14 h-8 rounded-full transition-colors relative shadow-inner shrink-0 ${enabled ? 'bg-amber-500' : 'bg-slate-300 dark:bg-slate-600'}`}
+                      >
+                        <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform shadow-md ${enabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

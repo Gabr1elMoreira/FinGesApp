@@ -9,6 +9,7 @@ import PrivacyValue from '../components/PrivacyValue';
 import StatCard from '../components/StatCard';
 import { aiService } from '../services/ai';
 import { storageService } from '../services/storage';
+import { apiRequest } from '../services/api';
 
 interface DashboardProps {
   transactions: Transaction[];
@@ -25,9 +26,12 @@ type WidgetConfig = { showStats: boolean; showAlerts: boolean; showCharts: boole
 const Dashboard: React.FC<DashboardProps> = ({
   transactions, allTransactions, user, theme, selectedMonth, selectedYear, onFocusMode
 }) => {
-  const [widgetConfig, setWidgetConfig] = useState<WidgetConfig>(() =>
-    storageService.getWidgetConfig(user.id)
-  );
+  const [widgetConfig, setWidgetConfig] = useState<WidgetConfig>(() => {
+    // Prioriza preferências do servidor; cai para localStorage e defaults
+    const serverCfg = user.settings.preferences?.widgetConfig;
+    const local = storageService.getWidgetConfig(user.id);
+    return { ...local, ...(serverCfg || {}) } as WidgetConfig;
+  });
   const [showWidgetPanel, setShowWidgetPanel] = useState(false);
   const [alerts, setAlerts] = useState<string[]>([]);
 
@@ -58,7 +62,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   const toggleWidget = (key: keyof WidgetConfig) => {
     const next = { ...widgetConfig, [key]: !widgetConfig[key] };
     setWidgetConfig(next);
-    storageService.saveWidgetConfig(user.id, next);
+    storageService.saveWidgetConfig(user.id, next); // fallback local imediato
+    // Persiste no servidor (multi-dispositivo)
+    apiRequest('/users/settings', { method: 'PUT', body: JSON.stringify({ preferences: { widgetConfig: next } }) })
+      .catch(err => console.error('Erro ao salvar widgets no servidor:', err));
   };
 
   const WIDGETS: { key: keyof WidgetConfig; label: string; icon: React.ReactNode }[] = [

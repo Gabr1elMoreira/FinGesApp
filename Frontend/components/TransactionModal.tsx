@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, DollarSign, CheckCircle2, Clock, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { Transaction, Category, TransactionType, PaymentMethod, RecurrenceFrequency, PAYMENT_METHODS } from '../types';
+import { X, DollarSign, CheckCircle2, Clock, ArrowUpRight, ArrowDownRight, Sparkles, Loader2 } from 'lucide-react';
+import { Transaction, Category, TransactionType, PaymentMethod, RecurrenceFrequency, PAYMENT_METHODS, Account } from '../types';
+import { apiRequest } from '../services/api';
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -8,9 +9,10 @@ interface TransactionModalProps {
   onSave: (transaction: Omit<Transaction, 'id' | 'userId'>) => void;
   initialData?: Transaction | null;
   enabledCategories: Category[];
+  accounts?: Account[];
 }
 
-const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, onSave, initialData, enabledCategories }) => {
+const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, onSave, initialData, enabledCategories, accounts = [] }) => {
 
   const formatToInputDate = (dateSource: string | Date) => {
     const d = new Date(dateSource);
@@ -27,8 +29,13 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     date: formatToInputDate(new Date()),
     isPaid: true,
     isRecurrent: false,
-    recurrenceFrequency: 'NONE' as RecurrenceFrequency
+    recurrenceFrequency: 'NONE' as RecurrenceFrequency,
+    accountId: '' as string
   });
+
+  const [nlText, setNlText] = useState('');
+  const [nlLoading, setNlLoading] = useState(false);
+  const [catLoading, setCatLoading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -41,7 +48,8 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
         date: formatToInputDate(initialData.date),
         isPaid: initialData.isPaid ?? true,
         isRecurrent: initialData.isRecurrent,
-        recurrenceFrequency: initialData.recurrenceFrequency || 'NONE'
+        recurrenceFrequency: initialData.recurrenceFrequency || 'NONE',
+        accountId: initialData.accountId || ''
       });
     } else {
       setFormData({
@@ -53,7 +61,8 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
         date: formatToInputDate(new Date()),
         isPaid: true,
         isRecurrent: false,
-        recurrenceFrequency: 'NONE'
+        recurrenceFrequency: 'NONE',
+        accountId: ''
       });
     }
   }, [initialData, isOpen, enabledCategories]);
@@ -63,6 +72,52 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
     today.setHours(0, 0, 0, 0);
     const selectedDate = new Date(newDate + 'T00:00:00Z');
     setFormData({ ...formData, date: newDate, isPaid: selectedDate > today ? false : formData.isPaid });
+  };
+
+  // IA: interpreta uma frase em linguagem natural e preenche o formulário
+  const handleNlParse = async () => {
+    if (!nlText.trim() || nlLoading) return;
+    setNlLoading(true);
+    try {
+      const p = await apiRequest('/ai/parse-transaction', {
+        method: 'POST',
+        body: JSON.stringify({ text: nlText.trim(), categories: enabledCategories }),
+      });
+      setFormData(prev => ({
+        ...prev,
+        description: p.description ?? prev.description,
+        amount: typeof p.amount === 'number' ? p.amount : prev.amount,
+        type: p.type === 'INCOME' ? 'INCOME' : 'EXPENSE',
+        category: (enabledCategories.includes(p.category) ? p.category : prev.category) as Category,
+        paymentMethod: (['CASH', 'PIX', 'DEBIT', 'CREDIT', 'OTHER'].includes(p.paymentMethod) ? p.paymentMethod : prev.paymentMethod) as PaymentMethod,
+        date: p.date || prev.date,
+        isPaid: typeof p.isPaid === 'boolean' ? p.isPaid : prev.isPaid,
+      }));
+      setNlText('');
+    } catch (e: any) {
+      alert(e.message || 'Não consegui interpretar. Tente: "gastei 50 no mercado no pix".');
+    } finally {
+      setNlLoading(false);
+    }
+  };
+
+  // IA: sugere a categoria a partir da descrição atual
+  const handleSuggestCategory = async () => {
+    if (!formData.description.trim() || catLoading) return;
+    setCatLoading(true);
+    try {
+      const { category } = await apiRequest('/ai/categorize', {
+        method: 'POST',
+        body: JSON.stringify({ description: formData.description.trim(), categories: enabledCategories }),
+      });
+      if (category && enabledCategories.includes(category)) {
+        setFormData(prev => ({ ...prev, category: category as Category }));
+      }
+    } catch (e) {
+      /* silencioso */
+    } finally {
+      setCatLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -81,7 +136,8 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
         date: dateObj.toISOString(),
         isPaid: formData.isPaid,
         isRecurrent: formData.isRecurrent,
-        recurrenceFrequency: formData.isRecurrent ? formData.recurrenceFrequency : 'NONE'
+        recurrenceFrequency: formData.isRecurrent ? formData.recurrenceFrequency : 'NONE',
+        accountId: formData.accountId || null
       };
       onSave(payload);
     } catch (err) {
@@ -131,7 +187,36 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 min-h-0 overflow-y-auto px-5 py-5 space-y-4">
+
+          {/* Lançamento por linguagem natural (IA) */}
+          {!initialData && (
+            <div className="rounded-2xl border border-primary/20 bg-primary/[0.05] p-3">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Sparkles size={13} className="text-primary" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Lançar com IA</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={nlText}
+                  onChange={e => setNlText(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleNlParse(); } }}
+                  placeholder='Ex: "gastei 50 no mercado no pix ontem"'
+                  className="flex-1 px-3 py-2.5 rounded-xl text-sm font-medium bg-white dark:bg-[#191b29] border border-slate-200 dark:border-white/[0.07] text-slate-900 dark:text-[#eaebf4] placeholder:text-slate-400 dark:placeholder:text-[#3d4060] outline-none focus:border-primary/50"
+                />
+                <button
+                  type="button"
+                  onClick={handleNlParse}
+                  disabled={nlLoading || !nlText.trim()}
+                  className="shrink-0 p-2.5 rounded-xl bg-gradient-to-br from-primary to-primary-dark text-white disabled:opacity-50 hover:-translate-y-0.5 transition-all"
+                  title="Preencher automaticamente"
+                >
+                  {nlLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Type selector */}
           <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-[#191b29] rounded-xl border border-slate-200/50 dark:border-white/[0.05]">
@@ -233,7 +318,19 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
           {/* Category + Method */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelClass}>Categoria</label>
+              <div className="flex items-center justify-between mb-1.5 px-0.5">
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-[#e8eaf3] uppercase tracking-[0.15em]">Categoria</label>
+                <button
+                  type="button"
+                  onClick={handleSuggestCategory}
+                  disabled={catLoading || !formData.description.trim()}
+                  className="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-primary disabled:opacity-40 hover:text-primary-dark transition-colors"
+                  title="Sugerir categoria com IA"
+                >
+                  {catLoading ? <Loader2 size={11} className="animate-spin" /> : <Sparkles size={11} />}
+                  Sugerir
+                </button>
+              </div>
               <select
                 className={selectClass}
                 value={formData.category}
@@ -257,6 +354,23 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
               </select>
             </div>
           </div>
+
+          {/* Conta (carteira) */}
+          {accounts.length > 0 && (
+            <div>
+              <label className={labelClass}>Conta</label>
+              <select
+                className={selectClass}
+                value={formData.accountId}
+                onChange={(e) => setFormData({ ...formData, accountId: e.target.value })}
+              >
+                <option value="" className="dark:bg-[#1c1e2f]">Sem conta</option>
+                {accounts.map(a => (
+                  <option key={a.id} value={a.id} className="dark:bg-[#1c1e2f]">{a.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Recurrent */}
           <div className="bg-slate-50 dark:bg-[#191b29] border border-slate-200/60 dark:border-white/[0.06] p-4 rounded-xl space-y-3">

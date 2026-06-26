@@ -44,7 +44,7 @@ const ContributionModal: React.FC<ContributionModalProps> = ({ isOpen, onClose, 
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
+                <form onSubmit={handleSubmit} className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5">
                     {/* Amount Input */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Valor do Aporte</label>
