@@ -64,7 +64,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
     <>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={onClose} />
       <div className="fixed top-[8%] left-1/2 -translate-x-1/2 w-full max-w-xl z-50 px-4 animate-in fade-in zoom-in-95 duration-150">
-        <div className="rounded-2xl bg-white dark:bg-[#0f1021] border border-slate-200/70 dark:border-white/[0.08] shadow-2xl dark:shadow-black/60 overflow-hidden">
+        <div className="rounded-2xl bg-white dark:bg-[#1c1e2f] border border-slate-200/70 dark:border-white/[0.08] shadow-2xl dark:shadow-black/60 overflow-hidden">
 
           {/* Input */}
           <div className="flex items-center gap-3 px-4 py-4">
@@ -87,7 +87,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
             )}
             <kbd
               onClick={onClose}
-              className="cursor-pointer text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] bg-slate-100 dark:bg-white/[0.05] px-2 py-1 rounded border border-slate-200 dark:border-white/[0.07]"
+              className="cursor-pointer text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] bg-slate-100 dark:bg-white/[0.05] px-2 py-1 rounded border border-slate-200 dark:border-white/[0.07]"
             >
               ESC
             </kbd>
@@ -98,7 +98,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
           {/* Results */}
           {q.length < 2 ? (
             <div className="px-4 py-8 text-center">
-              <p className="text-xs text-slate-400 dark:text-[#4a4f6e] font-medium">
+              <p className="text-xs text-slate-400 dark:text-[#e8eaf3] font-medium">
                 Digite ao menos 2 caracteres
               </p>
               <p className="text-[10px] text-slate-300 dark:text-[#2a2e48] mt-1">
@@ -107,7 +107,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
             </div>
           ) : !hasResults ? (
             <div className="px-4 py-8 text-center">
-              <p className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium">
+              <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium">
                 Nenhum resultado para <span className="text-primary">"{query}"</span>
               </p>
             </div>
@@ -116,7 +116,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
 
               {filteredTx.length > 0 && (
                 <div>
-                  <p className="px-4 pt-3 pb-1.5 text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">
+                  <p className="px-4 pt-3 pb-1.5 text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">
                     Transações ({filteredTx.length})
                   </p>
                   {filteredTx.map(t => (
@@ -134,7 +134,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
                         <p className="text-sm font-semibold text-slate-800 dark:text-[#eaebf4] truncate leading-none">
                           {highlight(t.description)}
                         </p>
-                        <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] mt-1 font-medium flex items-center gap-1">
+                        <p className="text-[10px] text-slate-400 dark:text-[#e8eaf3] mt-1 font-medium flex items-center gap-1">
                           <Calendar size={9} />
                           {t.category} · {new Date(t.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                         </p>
@@ -151,7 +151,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
 
               {filteredGoals.length > 0 && (
                 <div className="border-t border-slate-50 dark:border-white/[0.03]">
-                  <p className="px-4 pt-3 pb-1.5 text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">
+                  <p className="px-4 pt-3 pb-1.5 text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">
                     Metas
                   </p>
                   {filteredGoals.map(g => (
@@ -170,7 +170,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
                         <p className="text-sm font-semibold text-slate-800 dark:text-[#eaebf4] truncate leading-none">
                           {highlight(g.description)}
                         </p>
-                        <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] mt-1 font-medium">
+                        <p className="text-[10px] text-slate-400 dark:text-[#e8eaf3] mt-1 font-medium">
                           {g.type === 'SAVINGS_TARGET' ? 'Poupança' : 'Limite de Gastos'}
                         </p>
                       </div>
@@ -187,12 +187,12 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ transactions, userId, onNav
           {/* Footer */}
           <div className="border-t border-slate-100 dark:border-white/[0.05] px-4 py-2.5 flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <kbd className="text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] bg-slate-100 dark:bg-white/[0.05] px-1.5 py-0.5 rounded border border-slate-200 dark:border-white/[0.07]">↵</kbd>
-              <span className="text-[9px] text-slate-400 dark:text-[#4a4f6e]">navegar</span>
+              <kbd className="text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] bg-slate-100 dark:bg-white/[0.05] px-1.5 py-0.5 rounded border border-slate-200 dark:border-white/[0.07]">↵</kbd>
+              <span className="text-[9px] text-slate-400 dark:text-[#e8eaf3]">navegar</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <kbd className="text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] bg-slate-100 dark:bg-white/[0.05] px-1.5 py-0.5 rounded border border-slate-200 dark:border-white/[0.07]">ESC</kbd>
-              <span className="text-[9px] text-slate-400 dark:text-[#4a4f6e]">fechar</span>
+              <kbd className="text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] bg-slate-100 dark:bg-white/[0.05] px-1.5 py-0.5 rounded border border-slate-200 dark:border-white/[0.07]">ESC</kbd>
+              <span className="text-[9px] text-slate-400 dark:text-[#e8eaf3]">fechar</span>
             </div>
             <span className="ml-auto text-[9px] text-slate-300 dark:text-[#2a2e48]">
               {transactions.length} transações indexadas

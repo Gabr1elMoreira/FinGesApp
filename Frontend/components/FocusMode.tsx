@@ -41,11 +41,11 @@ const FocusMode: React.FC<FocusModeProps> = ({
   const isPositive = stats.balance >= 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#08090f]/96 backdrop-blur-2xl p-6 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#15161f]/96 backdrop-blur-2xl p-6 animate-in fade-in duration-300">
       {/* Close */}
       <button
         onClick={onClose}
-        className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] text-white/50 hover:text-white transition-all"
+        className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] text-white/85 hover:text-white transition-all"
       >
         <X size={20} />
       </button>
@@ -53,12 +53,12 @@ const FocusMode: React.FC<FocusModeProps> = ({
       {/* Mode label */}
       <div className="flex items-center gap-2 mb-10">
         <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse shadow-[0_0_8px_rgba(26,237,176,0.8)]" />
-        <span className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Modo Foco</span>
+        <span className="text-[9px] font-black text-white/85 uppercase tracking-[0.3em]">Modo Foco</span>
       </div>
 
       {/* Main balance */}
       <div className="text-center mb-12">
-        <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-4">
+        <p className="text-[10px] font-bold text-white/85 uppercase tracking-[0.2em] mb-4">
           Saldo de {MONTHS_FULL[selectedMonth]} {selectedYear}
         </p>
         <div className={`text-5xl sm:text-7xl font-black font-mono tracking-tighter leading-none transition-colors ${
@@ -73,7 +73,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
               <ArrowUpRight size={14} className="text-emerald-400" />
             </div>
             <div className="text-left">
-              <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Entradas</p>
+              <p className="text-[9px] text-white/85 font-bold uppercase tracking-widest">Entradas</p>
               <p className="text-sm font-black font-mono-num text-emerald-400 tracking-tight">
                 <PrivacyValue value={stats.income} privacyMode={privacyMode} currency />
               </p>
@@ -85,7 +85,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
               <ArrowDownRight size={14} className="text-rose-400" />
             </div>
             <div className="text-left">
-              <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">Saídas</p>
+              <p className="text-[9px] text-white/85 font-bold uppercase tracking-widest">Saídas</p>
               <p className="text-sm font-black font-mono-num text-rose-400 tracking-tight">
                 <PrivacyValue value={stats.expense} privacyMode={privacyMode} currency />
               </p>
@@ -97,14 +97,14 @@ const FocusMode: React.FC<FocusModeProps> = ({
       {/* Next bill */}
       {nextBill ? (
         <div className="w-full max-w-sm mb-8">
-          <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest mb-3 text-center">Próxima conta</p>
+          <p className="text-[9px] font-bold text-white/85 uppercase tracking-widest mb-3 text-center">Próxima conta</p>
           <div className="rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
               <Clock size={18} className="text-amber-400" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-white truncate">{nextBill.description}</p>
-              <p className="text-[10px] text-white/40 mt-0.5">
+              <p className="text-[10px] text-white/85 mt-0.5">
                 {new Date(nextBill.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })} · {nextBill.category}
               </p>
             </div>
@@ -140,7 +140,7 @@ const FocusMode: React.FC<FocusModeProps> = ({
           onClick={() => { onNavigate('dashboard'); onClose(); }}
           className="flex items-center gap-2 px-6 py-3.5 rounded-2xl
             bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08]
-            text-white/70 hover:text-white font-bold text-sm
+            text-white/90 hover:text-white font-bold text-sm
             transition-all"
         >
           <Wallet size={18} />
@@ -149,8 +149,8 @@ const FocusMode: React.FC<FocusModeProps> = ({
       </div>
 
       {/* Keyboard hint */}
-      <p className="mt-8 text-[9px] text-white/20 font-medium">
-        Pressione <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white/30">ESC</kbd> para sair do modo foco
+      <p className="mt-8 text-[9px] text-white/90 font-medium">
+        Pressione <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white/85">ESC</kbd> para sair do modo foco
       </p>
     </div>
   );

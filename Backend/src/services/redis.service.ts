@@ -36,3 +36,5 @@ export const invalidateCache = async (key: string) => {
     if (!isConnected) return;
     await redisClient.del(key);
 };
+
+export const isRedisConnected = () => isConnected;

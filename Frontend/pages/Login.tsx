@@ -46,11 +46,11 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f5f9] dark:bg-[#08090f] flex transition-colors duration-500">
+    <div className="min-h-screen bg-[#f4f5f9] dark:bg-[#15161f] flex transition-colors duration-500">
 
       {/* LEFT BRAND PANEL — desktop only */}
       <div className="hidden lg:flex flex-col justify-between w-[46%] xl:w-[42%] h-screen
-        bg-[#07080d]
+        bg-[#101119]
         border-r border-white/[0.05]
         relative overflow-hidden
         p-10 xl:p-12 shrink-0
@@ -120,7 +120,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
               <Wallet size={28} className="text-white" />
             </div>
             <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">FinGes</h1>
-            <p className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium mt-1 uppercase tracking-widest">Gestão Financeira</p>
+            <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium mt-1 uppercase tracking-widest">Gestão Financeira</p>
           </div>
 
           {/* Form header */}
@@ -128,7 +128,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
             <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">
               {isRegistering ? 'Criar conta' : 'Bem-vindo'}
             </h3>
-            <p className="text-sm text-slate-500 dark:text-[#4a4f6e] font-medium mt-1.5">
+            <p className="text-sm text-slate-500 dark:text-[#e8eaf3] font-medium mt-1.5">
               {isRegistering
                 ? 'Preencha os dados para começar'
                 : 'Entre com suas credenciais para acessar'
@@ -137,7 +137,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
           </div>
 
           {/* Card form */}
-          <div className="bg-white dark:bg-[#0f1021] border border-slate-200/70 dark:border-white/[0.06] rounded-2xl shadow-sm dark:shadow-black/40 p-6 md:p-7">
+          <div className="bg-white dark:bg-[#1c1e2f] border border-slate-200/70 dark:border-white/[0.06] rounded-2xl shadow-sm dark:shadow-black/40 p-6 md:p-7">
             <form className="space-y-4" onSubmit={handleSubmit}>
 
               {error && (
@@ -149,7 +149,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
 
               {isRegistering && (
                 <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-200">
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-[#4a4f6e] uppercase tracking-[0.15em] px-0.5">
+                  <label className="text-[10px] font-bold text-slate-500 dark:text-[#e8eaf3] uppercase tracking-[0.15em] px-0.5">
                     Nome Completo
                   </label>
                   <input
@@ -164,7 +164,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
               )}
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 dark:text-[#4a4f6e] uppercase tracking-[0.15em] px-0.5">
+                <label className="text-[10px] font-bold text-slate-500 dark:text-[#e8eaf3] uppercase tracking-[0.15em] px-0.5">
                   E-mail
                 </label>
                 <input
@@ -178,7 +178,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 dark:text-[#4a4f6e] uppercase tracking-[0.15em] px-0.5">
+                <label className="text-[10px] font-bold text-slate-500 dark:text-[#e8eaf3] uppercase tracking-[0.15em] px-0.5">
                   Senha
                 </label>
                 <input
@@ -220,7 +220,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, theme }) => {
 
           <div className="flex items-center justify-center gap-1.5 mt-5 lg:hidden">
             <ShieldCheck size={13} className="text-accent" />
-            <span className="text-[10px] text-slate-400 dark:text-[#3d4060] font-medium uppercase tracking-widest">Acesso 100% Seguro</span>
+            <span className="text-[10px] text-slate-400 dark:text-[#e8eaf3] font-medium uppercase tracking-widest">Acesso 100% Seguro</span>
           </div>
         </div>
       </div>

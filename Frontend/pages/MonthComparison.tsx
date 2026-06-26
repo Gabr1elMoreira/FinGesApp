@@ -82,7 +82,7 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
     };
     return (
       <div className="flex flex-col items-center gap-2.5">
-        <span className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">{label}</span>
+        <span className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">{label}</span>
         <div className={`h-1.5 w-20 rounded-full ${color}`} />
         <div className="flex items-center gap-1.5">
           <button
@@ -93,7 +93,7 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
           </button>
           <span className="text-sm font-black text-slate-800 dark:text-white tracking-tight w-32 text-center leading-none">
             {MONTHS_FULL[value.month]}<br />
-            <span className="text-xs font-bold text-slate-400 dark:text-[#4a4f6e]">{value.year}</span>
+            <span className="text-xs font-bold text-slate-400 dark:text-[#e8eaf3]">{value.year}</span>
           </span>
           <button
             onClick={next}
@@ -108,7 +108,7 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
 
   const tooltipStyle = {
     contentStyle: {
-      backgroundColor: isDark ? '#0f1021' : '#fff',
+      backgroundColor: isDark ? '#1c1e2f' : '#fff',
       border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
       borderRadius: '16px',
       padding: '12px 16px',
@@ -133,10 +133,10 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
     const isNeutral = valueA === valueB;
 
     return (
-      <div className="rounded-xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] p-4">
+      <div className="rounded-xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] p-4">
         <div className="flex items-center gap-2 mb-3">
           {icon}
-          <p className="text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">{label}</p>
+          <p className="text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">{label}</p>
           {diff && (
             <span className={`ml-auto text-[10px] font-black px-2 py-0.5 rounded-full ${
               isNeutral
@@ -149,20 +149,20 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
         </div>
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-[9px] text-slate-400 dark:text-[#4a4f6e] mb-1">
+            <p className="text-[9px] text-slate-400 dark:text-[#e8eaf3] mb-1">
               {MONTHS[periodA.month]} {periodA.year}
             </p>
-            <p className="text-base font-black font-mono-num text-slate-500 dark:text-slate-400 tracking-tight">
+            <p className="text-base font-black font-mono-num text-slate-500 dark:text-[#e8eaf3] tracking-tight">
               {formatCurrency(valueA)}
             </p>
           </div>
-          <ArrowUpRight size={14} className={`mb-1 ${isNeutral ? 'text-slate-300 dark:text-[#3d4060] rotate-90' : isUp ? 'text-emerald-400' : 'text-rose-400 rotate-180'}`} />
+          <ArrowUpRight size={14} className={`mb-1 ${isNeutral ? 'text-slate-300 dark:text-[#e8eaf3] rotate-90' : isUp ? 'text-emerald-400' : 'text-rose-400 rotate-180'}`} />
           <div className="text-right">
-            <p className="text-[9px] text-slate-400 dark:text-[#4a4f6e] mb-1">
+            <p className="text-[9px] text-slate-400 dark:text-[#e8eaf3] mb-1">
               {MONTHS[periodB.month]} {periodB.year}
             </p>
             <p className={`text-base font-black font-mono-num tracking-tight ${
-              isNeutral ? 'text-slate-700 dark:text-slate-300' : isGood ? 'text-emerald-500' : 'text-rose-500'
+              isNeutral ? 'text-slate-700 dark:text-[#e8eaf3]' : isGood ? 'text-emerald-500' : 'text-rose-500'
             }`}>{formatCurrency(valueB)}</p>
           </div>
         </div>
@@ -176,11 +176,11 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
       {/* Header */}
       <div>
         <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Comparação Mensal</h2>
-        <p className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium mt-0.5">Compare dois períodos lado a lado</p>
+        <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium mt-0.5">Compare dois períodos lado a lado</p>
       </div>
 
       {/* Period selectors */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1 rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1 rounded-2xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden">
         <div className="flex-1 flex items-center justify-center py-4 px-4">
           <MonthSelector value={periodA} onChange={setPeriodA} label="Período A" color="bg-primary/40" />
         </div>
@@ -222,10 +222,10 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
 
       {/* Bar chart: category comparison */}
       {categoryChart.length > 0 && (
-        <div className="rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden">
+        <div className="rounded-2xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden">
           <div className="px-5 py-4 border-b border-slate-100 dark:border-white/[0.05]">
             <h3 className="font-bold text-slate-900 dark:text-white text-sm">Gastos por Categoria</h3>
-            <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] mt-0.5">Comparação entre períodos selecionados</p>
+            <p className="text-[10px] text-slate-400 dark:text-[#e8eaf3] mt-0.5">Comparação entre períodos selecionados</p>
           </div>
           <div className="h-72 px-5 pb-5 pt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -236,13 +236,13 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: isDark ? '#7b82a4' : '#64748b', fontSize: 9, fontWeight: 700 }}
+                  tick={{ fill: isDark ? '#cbcfe1' : '#64748b', fontSize: 9, fontWeight: 700 }}
                   dy={8}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: isDark ? '#7b82a4' : '#64748b', fontSize: 9, fontWeight: 700 }}
+                  tick={{ fill: isDark ? '#cbcfe1' : '#64748b', fontSize: 9, fontWeight: 700 }}
                   tickFormatter={v => `R$${v}`}
                   width={70}
                 />
@@ -258,7 +258,7 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
                 <Legend
                   wrapperStyle={{
                     fontSize: '10px', fontWeight: 700, paddingTop: '16px',
-                    color: isDark ? '#7b82a4' : '#64748b'
+                    color: isDark ? '#cbcfe1' : '#64748b'
                   }}
                 />
                 <Bar dataKey={MONTHS[periodA.month]} fill="#7C5CFC" radius={[6, 6, 0, 0]} barSize={14} />
@@ -270,13 +270,13 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
       )}
 
       {/* Summary table */}
-      <div className="rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden">
+      <div className="rounded-2xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden">
         <div className="grid grid-cols-3 px-5 py-3 border-b border-slate-100 dark:border-white/[0.05] bg-slate-50 dark:bg-white/[0.02]">
-          <span className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">Indicador</span>
-          <span className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest text-center">
+          <span className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">Indicador</span>
+          <span className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest text-center">
             {MONTHS[periodA.month]} {periodA.year}
           </span>
-          <span className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest text-right">
+          <span className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest text-right">
             {MONTHS[periodB.month]} {periodB.year}
           </span>
         </div>
@@ -289,9 +289,9 @@ const MonthComparison: React.FC<MonthComparisonProps> = ({ allTransactions, them
             { label: 'Saldo', a: formatCurrency(statsA.balance), b: formatCurrency(statsB.balance) },
           ].map(row => (
             <div key={row.label} className="grid grid-cols-3 px-5 py-3.5">
-              <span className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium">{row.label}</span>
-              <span className="text-xs font-bold font-mono-num text-slate-500 dark:text-slate-400 text-center">{row.a}</span>
-              <span className="text-xs font-bold font-mono-num text-slate-700 dark:text-slate-200 text-right">{row.b}</span>
+              <span className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium">{row.label}</span>
+              <span className="text-xs font-bold font-mono-num text-slate-500 dark:text-[#e8eaf3] text-center">{row.a}</span>
+              <span className="text-xs font-bold font-mono-num text-slate-700 dark:text-[#e8eaf3] text-right">{row.b}</span>
             </div>
           ))}
         </div>

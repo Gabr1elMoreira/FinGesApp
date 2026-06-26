@@ -216,6 +216,8 @@ const App: React.FC = () => {
       theme={theme} transactions={transactions}
       selectedMonth={selectedMonth}
       selectedYear={selectedYear}
+      setSelectedMonth={setSelectedMonth}
+      setSelectedYear={setSelectedYear}
       onFocusMode={() => setFocusModeOpen(true)}
     >
       {(['dashboard','transactions','reports','recurring','goals','calendar'].includes(currentPage)) && (
@@ -263,6 +265,7 @@ const App: React.FC = () => {
           transactions={transactions}
           onAdd={handleAddTransaction}
           onUpdate={handleUpdateTransaction}
+          onDelete={handleDeleteTransaction}
           theme={theme}
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}

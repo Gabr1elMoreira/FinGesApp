@@ -91,8 +91,8 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
 
   const isIncome = formData.type === 'INCOME';
 
-  const labelClass = "block text-[10px] font-bold text-slate-500 dark:text-[#4a4f6e] uppercase tracking-[0.15em] mb-1.5 px-0.5";
-  const inputClass = "w-full px-4 py-3 rounded-xl font-semibold text-sm bg-slate-100 dark:bg-[#0a0b18] border border-slate-200 dark:border-white/[0.07] text-slate-900 dark:text-[#eaebf4] focus:border-primary/50 dark:focus:border-primary/40 focus:ring-2 focus:ring-primary/10 outline-none transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-[#2a2e48]";
+  const labelClass = "block text-[10px] font-bold text-slate-500 dark:text-[#e8eaf3] uppercase tracking-[0.15em] mb-1.5 px-0.5";
+  const inputClass = "w-full px-4 py-3 rounded-xl font-semibold text-sm bg-slate-100 dark:bg-[#191b29] border border-slate-200 dark:border-white/[0.07] text-slate-900 dark:text-[#eaebf4] focus:border-primary/50 dark:focus:border-primary/40 focus:ring-2 focus:ring-primary/10 outline-none transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-[#2a2e48]";
   const selectClass = inputClass + " appearance-none cursor-pointer";
 
   return (
@@ -106,15 +106,16 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
       {/* Modal */}
       <div className="
         relative w-full max-w-md
-        bg-white dark:bg-[#0f1021]
+        bg-white dark:bg-[#1c1e2f]
         border-t sm:border border-slate-200/70 dark:border-white/[0.07]
         rounded-t-[28px] sm:rounded-2xl
         shadow-2xl dark:shadow-black/60
         overflow-hidden
+        flex flex-col max-h-[92dvh] sm:max-h-[90vh]
         animate-in slide-in-from-bottom duration-300 sm:zoom-in-95
       ">
         {/* Header */}
-        <div className="relative px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+        <div className="relative shrink-0 px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
           {/* Type indicator strip */}
           <div className={`absolute top-0 left-0 right-0 h-0.5 transition-colors duration-300 ${isIncome ? 'bg-gradient-to-r from-emerald-500/80 via-emerald-500/40 to-transparent' : 'bg-gradient-to-r from-rose-500/80 via-rose-500/40 to-transparent'}`} />
           <div className="flex items-center justify-between">
@@ -130,17 +131,17 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[82vh] overflow-y-auto no-scrollbar">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-5 py-5 space-y-4">
 
           {/* Type selector */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-[#0a0b18] rounded-xl border border-slate-200/50 dark:border-white/[0.05]">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-[#191b29] rounded-xl border border-slate-200/50 dark:border-white/[0.05]">
             <button
               type="button"
               onClick={() => setFormData({ ...formData, type: 'INCOME' })}
               className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                 formData.type === 'INCOME'
                   ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                  : 'text-slate-500 dark:text-[#4a4f6e] hover:text-slate-700 dark:hover:text-slate-300'
+                  : 'text-slate-500 dark:text-[#e8eaf3] hover:text-slate-700 dark:hover:text-white'
               }`}
             >
               <ArrowUpRight size={15} /> Entrada
@@ -151,7 +152,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
               className={`flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                 formData.type === 'EXPENSE'
                   ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
-                  : 'text-slate-500 dark:text-[#4a4f6e] hover:text-slate-700 dark:hover:text-slate-300'
+                  : 'text-slate-500 dark:text-[#e8eaf3] hover:text-slate-700 dark:hover:text-white'
               }`}
             >
               <ArrowDownRight size={15} /> Saída
@@ -168,7 +169,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                 className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                   formData.isPaid
                     ? 'border-emerald-500/40 bg-emerald-500/[0.08] text-emerald-600 dark:text-emerald-400'
-                    : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#4a4f6e] hover:border-slate-300 dark:hover:border-white/[0.12]'
+                    : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#e8eaf3] hover:border-slate-300 dark:hover:border-white/[0.12]'
                 }`}
               >
                 <CheckCircle2 size={14} /> Pago
@@ -179,7 +180,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                 className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                   !formData.isPaid
                     ? 'border-amber-500/40 bg-amber-500/[0.08] text-amber-600 dark:text-amber-400'
-                    : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#4a4f6e] hover:border-slate-300 dark:hover:border-white/[0.12]'
+                    : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#e8eaf3] hover:border-slate-300 dark:hover:border-white/[0.12]'
                 }`}
               >
                 <Clock size={14} /> Pendente
@@ -205,7 +206,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
             <div>
               <label className={labelClass}>Valor</label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#4a4f6e] text-sm font-bold">R$</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#e8eaf3] text-sm font-bold">R$</span>
                 <input
                   required
                   type="number"
@@ -239,7 +240,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
               >
                 {enabledCategories.map(cat => (
-                  <option key={cat} value={cat} className="dark:bg-[#0f1021]">{cat}</option>
+                  <option key={cat} value={cat} className="dark:bg-[#1c1e2f]">{cat}</option>
                 ))}
               </select>
             </div>
@@ -251,14 +252,14 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                 onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
               >
                 {PAYMENT_METHODS.map(pm => (
-                  <option key={pm.value} value={pm.value} className="dark:bg-[#0f1021]">{pm.label}</option>
+                  <option key={pm.value} value={pm.value} className="dark:bg-[#1c1e2f]">{pm.label}</option>
                 ))}
               </select>
             </div>
           </div>
 
           {/* Recurrent */}
-          <div className="bg-slate-50 dark:bg-[#0a0b18] border border-slate-200/60 dark:border-white/[0.06] p-4 rounded-xl space-y-3">
+          <div className="bg-slate-50 dark:bg-[#191b29] border border-slate-200/60 dark:border-white/[0.06] p-4 rounded-xl space-y-3">
             <label className="flex items-center gap-3 cursor-pointer group">
               <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${formData.isRecurrent ? 'bg-primary border-primary' : 'border-slate-300 dark:border-[#2a2e48] group-hover:border-primary/50'}`}>
                 {formData.isRecurrent && <div className="w-2 h-2 bg-white rounded-sm" />}
@@ -269,7 +270,7 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
                 checked={formData.isRecurrent}
                 onChange={(e) => setFormData({ ...formData, isRecurrent: e.target.checked, recurrenceFrequency: e.target.checked ? 'MONTHLY' : 'NONE' })}
               />
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">Despesa Recorrente</span>
+              <span className="text-xs font-semibold text-slate-700 dark:text-[#e8eaf3]">Despesa Recorrente</span>
             </label>
 
             {formData.isRecurrent && (
@@ -298,6 +299,9 @@ const TransactionModal: React.FC<TransactionModalProps> = ({ isOpen, onClose, on
           >
             {initialData ? 'Atualizar Transação' : 'Salvar Lançamento'}
           </button>
+
+          {/* Safe-area spacer (home indicator on mobile) */}
+          <div className="pb-safe" />
         </form>
       </div>
     </div>

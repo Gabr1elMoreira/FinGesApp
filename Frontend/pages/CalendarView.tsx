@@ -64,7 +64,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Calendário</h2>
-          <p className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium mt-0.5">
             {MONTHS_FULL[selectedMonth]} {selectedYear} · {transactions.length} transações
           </p>
         </div>
@@ -85,11 +85,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
       </div>
 
       {/* Calendar */}
-      <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30">
+      <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30">
         {/* Day headers */}
         <div className="grid grid-cols-7 border-b border-slate-100 dark:border-white/[0.05]">
           {DAYS_OF_WEEK.map(d => (
-            <div key={d} className="px-1 py-3 text-center text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">
+            <div key={d} className="px-1 py-3 text-center text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">
               {d}
             </div>
           ))}
@@ -134,7 +134,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
                     ? 'bg-primary text-white shadow-sm shadow-primary/30'
                     : isExpanded
                       ? 'text-primary dark:text-primary-light'
-                      : 'text-slate-700 dark:text-slate-300'
+                      : 'text-slate-700 dark:text-[#e8eaf3]'
                 }`}>
                   {day}
                 </span>
@@ -157,7 +157,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
                         </span>
                       </div>
                     )}
-                    <span className="sm:hidden text-[8px] text-slate-400 dark:text-[#4a4f6e] font-bold">
+                    <span className="sm:hidden text-[8px] text-slate-400 dark:text-[#e8eaf3] font-bold">
                       {txs.length}tx
                     </span>
                   </div>
@@ -169,7 +169,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 text-[10px] text-slate-400 dark:text-[#4a4f6e] font-medium">
+      <div className="flex items-center gap-4 text-[10px] text-slate-400 dark:text-[#e8eaf3] font-medium">
         <div className="flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500" />
           Entradas pagas
@@ -186,7 +186,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
 
       {/* Expanded day detail */}
       {expandedDay !== null && expandedDayTxs.length > 0 && (
-        <div className="rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+        <div className="rounded-2xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden animate-in slide-in-from-top-2 duration-300">
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/[0.05]">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-primary/[0.1] rounded-xl flex items-center justify-center">
@@ -196,7 +196,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">
                   {expandedDay} de {MONTHS_FULL[selectedMonth]}
                 </h3>
-                <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] mt-0.5">
+                <p className="text-[10px] text-slate-400 dark:text-[#e8eaf3] mt-0.5">
                   {expandedDayTxs.length} {expandedDayTxs.length === 1 ? 'transação' : 'transações'}
                 </p>
               </div>
@@ -229,7 +229,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
                       {t.category}
                     </span>
                     <span className="text-[10px] text-slate-300 dark:text-[#2a2e48]">·</span>
-                    <span className="text-[10px] text-slate-400 dark:text-[#4a4f6e]">{t.paymentMethod}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-[#e8eaf3]">{t.paymentMethod}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end shrink-0 gap-1.5">
@@ -254,14 +254,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({ transactions, user, theme, 
 
       {transactions.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20
-          rounded-2xl bg-white dark:bg-[#10111e]
+          rounded-2xl bg-white dark:bg-[#1d1f2e]
           border border-dashed border-slate-200/70 dark:border-white/[0.055]
           text-center px-8"
         >
           <div className="w-14 h-14 bg-slate-100 dark:bg-white/[0.04] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Calendar size={22} className="text-slate-300 dark:text-[#2a2e48]" />
           </div>
-          <p className="text-slate-500 dark:text-[#4a4f6e] font-medium">Nenhuma transação neste mês</p>
+          <p className="text-slate-500 dark:text-[#e8eaf3] font-medium">Nenhuma transação neste mês</p>
         </div>
       )}
     </div>

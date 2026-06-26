@@ -24,12 +24,12 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
   const COLORS = ['#7C5CFC', '#1AEDB0', '#f59e0b', '#ff4465', '#8b5cf6', '#06b6d4', '#ec4899'];
 
   const isDark = theme === 'dark';
-  const chartTextColor = isDark ? '#7b82a4' : '#64748b';
+  const chartTextColor = isDark ? '#cbcfe1' : '#64748b';
   const chartGridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
 
   const tooltipStyle = {
     contentStyle: {
-      backgroundColor: isDark ? '#0f1021' : '#fff',
+      backgroundColor: isDark ? '#1c1e2f' : '#fff',
       border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
       borderRadius: '16px',
       boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 24px rgba(0,0,0,0.1)',
@@ -132,7 +132,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
     return data;
   }, [transactions, selectedMonth, selectedYear]);
 
-  const cardClass = "rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden";
+  const cardClass = "rounded-2xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden";
   const headerClass = "flex items-center gap-3 px-5 py-4 border-b border-slate-100 dark:border-white/[0.05]";
   const iconClass = "w-8 h-8 rounded-xl flex items-center justify-center shrink-0";
 
@@ -279,7 +279,7 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({ transactions, theme, 
             </div>
             <div>
               <h3 className="font-bold text-slate-900 dark:text-white text-sm">Evolução Mensal</h3>
-              <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] font-medium mt-0.5">Entradas e saídas diárias</p>
+              <p className="text-[10px] text-slate-400 dark:text-[#e8eaf3] font-medium mt-0.5">Entradas e saídas diárias</p>
             </div>
           </div>
           <div className="h-[260px] px-5 pb-5 pt-4">

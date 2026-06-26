@@ -62,15 +62,15 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onSave, initialD
     return (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative bg-white dark:bg-slate-800 w-full max-w-lg rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300 border dark:border-slate-700">
-                <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-violet-600 text-white">
+            <div className="relative bg-white dark:bg-slate-800 w-full max-w-lg rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] animate-in slide-in-from-bottom duration-300 border dark:border-slate-700">
+                <div className="shrink-0 p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-violet-600 text-white">
                     <h3 className="text-lg font-bold">{initialData ? 'Editar Meta' : 'Nova Meta Financeira'}</h3>
                     <button onClick={onClose} className="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-colors">
                         <X size={20} />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
                     {/* TIPO DE META */}
                     <div className="grid grid-cols-2 gap-3 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl">
                         <button
@@ -174,6 +174,8 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, onSave, initialD
                     >
                         {initialData ? 'Salvar Alterações' : 'Criar Meta'}
                     </button>
+
+                    <div className="pb-safe" />
                 </form>
             </div>
         </div>

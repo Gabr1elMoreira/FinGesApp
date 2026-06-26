@@ -20,12 +20,12 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
   const monthName = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"][selectedMonth].toUpperCase();
 
   const isDark = theme === 'dark';
-  const textColor = isDark ? '#7b82a4' : '#64748b';
+  const textColor = isDark ? '#cbcfe1' : '#64748b';
   const gridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
 
   const tooltipStyle = {
     contentStyle: {
-      backgroundColor: isDark ? '#0f1021' : '#fff',
+      backgroundColor: isDark ? '#1c1e2f' : '#fff',
       border: `1px solid ${isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'}`,
       borderRadius: '16px',
       boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.5)' : '0 8px 24px rgba(0,0,0,0.1)',
@@ -249,7 +249,7 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
     }));
   }, [transactions]);
 
-  const cardClass = "rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden";
+  const cardClass = "rounded-2xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 overflow-hidden";
   const sectionHeaderClass = "flex items-center gap-3 p-5 md:p-6 border-b border-slate-100 dark:border-white/[0.05]";
 
   const summaryCards = [
@@ -266,7 +266,7 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Relatório</h2>
-          <p className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium mt-0.5">{monthName} {selectedYear}</p>
+          <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium mt-0.5">{monthName} {selectedYear}</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <button
@@ -298,7 +298,7 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
           <div key={i} className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border ${c.bg}`}>
             <div>{c.icon}</div>
             <div>
-              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-[#4a4f6e]">{c.label}</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-[#e8eaf3]">{c.label}</p>
               <p className={`text-sm font-black font-mono-num tracking-tight ${c.color}`}>
                 {formatCurrency(c.value)}
               </p>
@@ -315,7 +315,7 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
           </div>
           <div>
             <h3 className="font-bold text-slate-900 dark:text-white text-sm">Fluxo e Evolução de Saldo</h3>
-            <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] font-medium mt-0.5">Receitas, despesas e saldo acumulado</p>
+            <p className="text-[10px] text-slate-400 dark:text-[#e8eaf3] font-medium mt-0.5">Receitas, despesas e saldo acumulado</p>
           </div>
         </div>
         <div className="p-5 md:p-6 h-[300px] md:h-[360px]">
@@ -385,24 +385,24 @@ const Reports: React.FC<ReportsProps> = ({ transactions, theme, selectedMonth, s
       <div className={cardClass}>
         <div className={sectionHeaderClass}>
           <h3 className="font-bold text-slate-900 dark:text-white text-sm">Extrato de Operações</h3>
-          <span className="ml-auto text-[10px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">{transactions.length} registros</span>
+          <span className="ml-auto text-[10px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">{transactions.length} registros</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-slate-100 dark:border-white/[0.05]">
                 {['Data', 'Descrição', 'Categoria', 'Valor'].map((h, i) => (
-                  <th key={h} className={`py-3 px-5 text-[10px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-[0.15em] ${i === 3 ? 'text-right' : ''}`}>{h}</th>
+                  <th key={h} className={`py-3 px-5 text-[10px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-[0.15em] ${i === 3 ? 'text-right' : ''}`}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50 dark:divide-white/[0.025]">
               {transactions.map((t) => (
                 <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.025] transition-colors">
-                  <td className="py-3.5 px-5 text-xs text-slate-500 dark:text-[#5a6080] font-mono whitespace-nowrap">{formatDateSafe(t.date)}</td>
+                  <td className="py-3.5 px-5 text-xs text-slate-500 dark:text-[#e8eaf3] font-mono whitespace-nowrap">{formatDateSafe(t.date)}</td>
                   <td className="py-3.5 px-5 text-sm font-semibold text-slate-900 dark:text-[#eaebf4] max-w-[200px] truncate">{t.description}</td>
                   <td className="py-3.5 px-5">
-                    <span className="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-slate-300 uppercase tracking-wide">
+                    <span className="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-[#e8eaf3] uppercase tracking-wide">
                       {t.category}
                     </span>
                   </td>

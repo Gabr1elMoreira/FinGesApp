@@ -33,8 +33,8 @@ const ContributionModal: React.FC<ContributionModalProps> = ({ isOpen, onClose, 
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal Content */}
-            <div className="relative bg-white dark:bg-slate-800 w-full max-w-sm rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300 border dark:border-slate-700">
-                <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-emerald-600 text-white">
+            <div className="relative bg-white dark:bg-slate-800 w-full max-w-sm rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh] animate-in slide-in-from-bottom duration-300 border dark:border-slate-700">
+                <div className="shrink-0 p-6 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-emerald-600 text-white">
                     <div>
                         <span className="text-[10px] uppercase font-black tracking-widest opacity-100 text-emerald-50">Novo Aporte</span>
                         <h3 className="text-lg font-bold leading-none mt-1">{goalTitle}</h3>
@@ -44,7 +44,7 @@ const ContributionModal: React.FC<ContributionModalProps> = ({ isOpen, onClose, 
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
                     {/* Amount Input */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black text-slate-950 dark:text-white uppercase tracking-widest px-1">Valor do Aporte</label>
@@ -105,6 +105,8 @@ const ContributionModal: React.FC<ContributionModalProps> = ({ isOpen, onClose, 
                         <PlusCircle size={20} />
                         Confirmar Guardar
                     </button>
+
+                    <div className="pb-safe" />
                 </form>
             </div>
         </div>

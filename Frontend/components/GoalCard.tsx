@@ -46,7 +46,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
   return (
     <div className="
       relative group overflow-hidden rounded-2xl
-      bg-white dark:bg-[#10111e]
+      bg-white dark:bg-[#1d1f2e]
       border border-slate-200/70 dark:border-white/[0.055]
       shadow-sm dark:shadow-black/30
       transition-all duration-300
@@ -89,7 +89,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
             {theme.icon}
           </div>
           <div className="min-w-0">
-            <p className="text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-[0.18em] mb-0.5">
+            <p className="text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-[0.18em] mb-0.5">
               {goal.type === 'SPENDING_LIMIT' ? goal.category : 'Poupança'}
             </p>
             <h3 className="font-bold text-slate-900 dark:text-[#eaebf4] leading-tight text-sm truncate max-w-[180px]">{goal.description}</h3>
@@ -102,7 +102,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
             <span className="text-2xl font-black text-slate-900 dark:text-[#eaebf4] font-mono-num tracking-tight leading-none">
               <PrivacyValue value={currentVal} privacyMode={privacyMode} />
             </span>
-            <span className="text-xs font-bold text-slate-400 dark:text-[#4a4f6e] font-mono-num flex gap-1">
+            <span className="text-xs font-bold text-slate-400 dark:text-[#e8eaf3] font-mono-num flex gap-1">
               / <PrivacyValue value={goal.targetAmount} privacyMode={privacyMode} />
             </span>
           </div>
@@ -121,7 +121,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
           <span className={`text-xs font-bold font-mono-num ${theme.pct}`}>
             {percentage.toFixed(0)}%
           </span>
-          <div className="flex items-center gap-3 text-[10px] font-semibold text-slate-400 dark:text-[#4a4f6e]">
+          <div className="flex items-center gap-3 text-[10px] font-semibold text-slate-400 dark:text-[#e8eaf3]">
             {goal.deadline && (
               <div className="flex items-center gap-1">
                 <Calendar size={11} className="text-primary/60" />
@@ -148,7 +148,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
           <div className="mt-4 pt-4 border-t border-slate-100 dark:border-white/[0.05]">
             <button
               onClick={() => setShowHistory(!showHistory)}
-              className="w-full flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#4a4f6e] hover:text-primary transition-colors mb-2"
+              className="w-full flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-[#e8eaf3] hover:text-primary transition-colors mb-2"
             >
               <div className="flex items-center gap-1.5">
                 <History size={12} />
@@ -160,7 +160,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
             {(showHistory ? sortedContributions : sortedContributions.slice(0, 2)).map((c) => (
               <div key={c.id} className="flex justify-between items-center py-2 border-b border-dashed border-slate-100 dark:border-white/[0.04] last:border-0">
                 <div>
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+                  <span className="text-xs font-semibold text-slate-700 dark:text-[#e8eaf3] block">
                     {new Date(c.date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                   </span>
                   {c.note && <span className="text-[10px] text-slate-400 italic truncate block max-w-[130px]">{c.note}</span>}
@@ -171,7 +171,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, spentAmount, onEdit, onDelete
               </div>
             ))}
             {!showHistory && sortedContributions.length > 2 && (
-              <p className="text-[10px] text-slate-400 dark:text-[#4a4f6e] text-center mt-1 font-semibold">
+              <p className="text-[10px] text-slate-400 dark:text-[#e8eaf3] text-center mt-1 font-semibold">
                 +{sortedContributions.length - 2} aportes
               </p>
             )}

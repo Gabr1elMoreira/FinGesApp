@@ -9,7 +9,7 @@
 
   .dark body {
     @apply text-[#eaebf4];
-    background-color: #08090f;
+    background-color: #15161f;
   }
 }
 
@@ -19,7 +19,7 @@
     @apply bg-white border border-slate-200/80 shadow-sm;
   }
   .dark .card {
-    background-color: #10111e;
+    background-color: #1d1f2e;
     border-color: rgba(255, 255, 255, 0.055);
     box-shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
   }
@@ -29,7 +29,7 @@
     @apply bg-white/80 backdrop-blur-xl border border-white/60 shadow-sm;
   }
   .dark .glass {
-    background-color: rgba(10, 11, 20, 0.85);
+    background-color: rgba(29, 31, 46, 0.88);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-color: rgba(255, 255, 255, 0.06);
@@ -40,7 +40,7 @@
     @apply bg-white/90 backdrop-blur-xl border border-slate-200/60 shadow-sm;
   }
   .dark .glass-card {
-    background-color: #10111e;
+    background-color: #1d1f2e;
     border-color: rgba(255, 255, 255, 0.055);
     box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.2);
   }
@@ -108,7 +108,7 @@
       placeholder:text-slate-400;
   }
   .dark .fin-input {
-    background-color: #0c0d1a;
+    background-color: #191b29;
     border-color: rgba(255,255,255,0.07);
     color: #eaebf4;
   }
@@ -163,9 +163,9 @@
   /* ===== SECTION HEADER ===== */
   .section-label {
     @apply text-[10px] font-bold uppercase tracking-[0.2em];
-    color: #4a4f6e;
+    color: #64748b;
   }
-  .dark .section-label { color: #4a4f6e; }
+  .dark .section-label { color: #e8eaf3; }
 
   /* ===== ANIMATED SPIN ===== */
   @keyframes spin-slow {

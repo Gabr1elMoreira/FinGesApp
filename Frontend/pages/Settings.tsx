@@ -239,7 +239,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
       onClick={() => setActiveTab(id)}
       className={`flex items-center gap-2 px-6 py-4 rounded-2xl transition-all font-bold text-sm ${activeTab === id
           ? (id === 'danger' ? 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-lg shadow-rose-500/20' : 'bg-gradient-to-br from-primary to-primary-dark text-white shadow-lg shadow-primary/30')
-          : (id === 'danger' ? 'glass-card text-rose-500 hover:bg-rose-500/10' : 'glass-card text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-white/5')
+          : (id === 'danger' ? 'glass-card text-rose-500 hover:bg-rose-500/10' : 'glass-card text-slate-600 dark:text-[#e8eaf3] hover:bg-white/50 dark:hover:bg-white/5')
         }`}
     >
       <Icon size={18} />
@@ -295,14 +295,14 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
             <form onSubmit={handleUpdateProfile} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">Nome</label>
+                  <label className="text-[10px] font-black text-slate-500 dark:text-[#e8eaf3] uppercase tracking-widest px-1">Nome</label>
                   <div className="relative group">
                     <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
                     <input type="text" className="w-full pl-12 pr-4 py-4 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white transition-all text-sm font-semibold border border-slate-200/50 dark:border-white/5" value={profileName} onChange={(e) => setProfileName(e.target.value)} />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">Email</label>
+                  <label className="text-[10px] font-black text-slate-500 dark:text-[#e8eaf3] uppercase tracking-widest px-1">Email</label>
                   <div className="relative group">
                     <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
                     <input type="email" className="w-full pl-12 pr-4 py-4 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white transition-all text-sm font-semibold border border-slate-200/50 dark:border-white/5" value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)} />
@@ -331,14 +331,14 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
               {showPasswordFields && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 animate-in slide-in-from-top-2 duration-300">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">Nova Senha</label>
+                    <label className="text-[10px] font-black text-slate-500 dark:text-[#e8eaf3] uppercase tracking-widest px-1">Nova Senha</label>
                     <div className="relative group">
                       <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
                       <input type="password" placeholder="••••••" className="w-full pl-12 pr-4 py-4 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white transition-all text-sm font-semibold border border-slate-200/50 dark:border-white/5" value={password} onChange={(e) => setPassword(e.target.value)} />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest px-1">Confirmar Senha</label>
+                    <label className="text-[10px] font-black text-slate-500 dark:text-[#e8eaf3] uppercase tracking-widest px-1">Confirmar Senha</label>
                     <div className="relative group">
                       <ShieldCheck size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
                       <input type="password" placeholder="••••••" className="w-full pl-12 pr-4 py-4 glass-card rounded-2xl outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white transition-all text-sm font-semibold border border-slate-200/50 dark:border-white/5" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
@@ -367,7 +367,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                     <div className={`p-3 rounded-xl transition-colors ${theme === 'light' ? 'bg-primary/20 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:text-primary group-hover:bg-primary/10'}`}>
                       <Sun size={24} />
                     </div>
-                    <span className={`font-black text-base ${theme === 'light' ? 'text-primary' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary'}`}>Claro</span>
+                    <span className={`font-black text-base ${theme === 'light' ? 'text-primary' : 'text-slate-600 dark:text-[#e8eaf3] group-hover:text-primary'}`}>Claro</span>
                   </div>
                 </button>
                 <button onClick={() => setTheme('dark')} className={`p-6 rounded-3xl border-2 transition-all duration-300 group ${theme === 'dark' ? 'border-primary bg-primary/5 shadow-inner' : 'border-slate-200/50 dark:border-white/5 hover:border-primary/30'}`}>
@@ -375,7 +375,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                     <div className={`p-3 rounded-xl transition-colors ${theme === 'dark' ? 'bg-primary/20 text-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:text-primary group-hover:bg-primary/10'}`}>
                       <Moon size={24} />
                     </div>
-                    <span className={`font-black text-base ${theme === 'dark' ? 'text-primary' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary'}`}>Escuro</span>
+                    <span className={`font-black text-base ${theme === 'dark' ? 'text-primary' : 'text-slate-600 dark:text-[#e8eaf3] group-hover:text-primary'}`}>Escuro</span>
                   </div>
                 </button>
               </div>
@@ -394,7 +394,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                   </div>
                   <div>
                     <h4 className="font-black text-slate-900 dark:text-white text-base tracking-tight">Modo de Privacidade</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1">Ocultar valores monetários ao iniciar o aplicativo</p>
+                    <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-bold mt-1">Ocultar valores monetários ao iniciar o aplicativo</p>
                   </div>
                 </div>
                 <button
@@ -440,7 +440,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                   <Download size={28} />
                 </div>
                 <h4 className="font-black text-xl text-slate-900 dark:text-white mb-2 tracking-tight">Exportar Backup</h4>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed">Baixe um arquivo .json com todas as suas transações e dados importantes.</p>
+                <p className="text-sm text-slate-500 dark:text-[#e8eaf3] font-bold leading-relaxed">Baixe um arquivo .json com todas as suas transações e dados importantes.</p>
               </button>
 
               <button onClick={handleImportClick} className="p-8 glass-card border border-slate-200/50 dark:border-white/5 rounded-3xl hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300 group text-left hover:-translate-y-1">
@@ -448,7 +448,7 @@ const Settings: React.FC<SettingsProps> = ({ user, setUser, theme, setTheme }) =
                   <Upload size={28} />
                 </div>
                 <h4 className="font-black text-xl text-slate-900 dark:text-white mb-2 tracking-tight">Restaurar Dados</h4>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-bold leading-relaxed">Importe um arquivo de backup para restaurar seu histórico com segurança.</p>
+                <p className="text-sm text-slate-500 dark:text-[#e8eaf3] font-bold leading-relaxed">Importe um arquivo de backup para restaurar seu histórico com segurança.</p>
                 <input type="file" accept=".json" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
               </button>
             </div>

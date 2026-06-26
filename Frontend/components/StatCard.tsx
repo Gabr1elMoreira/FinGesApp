@@ -37,8 +37,8 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, pri
 
   return (
     <div className={`
-      relative overflow-hidden rounded-2xl p-5 flex flex-col justify-between
-      bg-white dark:bg-[#10111e]
+      relative overflow-hidden rounded-2xl p-4 sm:p-5 flex flex-col justify-between
+      bg-white dark:bg-[#1d1f2e]
       border border-slate-200/70 dark:border-white/[0.055]
       shadow-sm dark:shadow-black/30
       transition-all duration-300 group
@@ -58,14 +58,14 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, pri
         <div className={`w-10 h-10 rounded-xl ${colorClass} flex items-center justify-center shrink-0 ring-1 ${accent.iconRing} transition-transform duration-300 group-hover:scale-105`}>
           {icon}
         </div>
-        <p className="text-[10px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-[0.18em] text-right leading-tight max-w-[110px]">
+        <p className="text-[10px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-[0.18em] text-right leading-tight max-w-[110px]">
           {title}
         </p>
       </div>
 
       {/* Value */}
-      <div className="relative z-10">
-        <h3 className="text-2xl font-black text-slate-900 dark:text-[#eaebf4] font-mono-num tracking-tight leading-none truncate">
+      <div className="relative z-10 min-w-0">
+        <h3 className="block w-full text-lg sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-[#eaebf4] font-mono-num tracking-tight leading-none truncate">
           <PrivacyValue value={value} privacyMode={privacyMode} />
         </h3>
       </div>

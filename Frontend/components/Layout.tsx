@@ -23,7 +23,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon, label, active, onClick 
     className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-left group ${
       active
         ? 'bg-primary/[0.12] text-white dark:text-white'
-        : 'text-slate-500 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.05]'
+        : 'text-slate-500 dark:text-[#e8eaf3] hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.05]'
     }`}
   >
     {active && (
@@ -46,7 +46,7 @@ const RealTimeClock = () => {
     return () => clearInterval(timer);
   }, []);
   return (
-    <span className="px-2.5 py-1 bg-slate-100 dark:bg-white/[0.05] rounded-lg text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-widest inline-flex items-center gap-1.5 font-mono">
+    <span className="px-2.5 py-1 bg-slate-100 dark:bg-white/[0.05] rounded-lg text-[10px] font-bold text-slate-500 dark:text-[#e8eaf3] tracking-widest inline-flex items-center gap-1.5 font-mono">
       <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-[0_0_6px_rgba(124,92,252,0.8)]" />
       {time.toLocaleTimeString('pt-BR')}
     </span>
@@ -76,12 +76,14 @@ interface LayoutProps {
   transactions: Transaction[];
   selectedMonth: number;
   selectedYear: number;
+  setSelectedMonth?: (month: number) => void;
+  setSelectedYear?: (year: number) => void;
   onFocusMode?: () => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({
   children, currentPage, setCurrentPage, user, onLogout, onSwitchUser,
-  theme, transactions, selectedMonth, selectedYear, onFocusMode
+  theme, transactions, selectedMonth, selectedYear, setSelectedMonth, setSelectedYear, onFocusMode
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -103,6 +105,18 @@ const Layout: React.FC<LayoutProps> = ({
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  // Navega a partir de um alerta, ajustando o mês/ano para a data da conta quando informada.
+  const handleAlertNavigate = (page: string, date?: string) => {
+    if (date && setSelectedMonth && setSelectedYear) {
+      const d = new Date(date);
+      if (!isNaN(d.getTime())) {
+        setSelectedMonth(d.getUTCMonth());
+        setSelectedYear(d.getUTCFullYear());
+      }
+    }
+    setCurrentPage(page);
+  };
 
   const navItems = [
     { id: 'dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
@@ -136,7 +150,7 @@ const Layout: React.FC<LayoutProps> = ({
       {/* SIDEBAR */}
       <aside className={`
         fixed md:static inset-y-0 left-0 z-30 w-64 flex flex-col h-full
-        bg-white dark:bg-[#07080d]
+        bg-white dark:bg-[#101119]
         border-r border-slate-200/70 dark:border-white/[0.05]
         transform transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
         shadow-xl md:shadow-none
@@ -155,7 +169,7 @@ const Layout: React.FC<LayoutProps> = ({
               </div>
               <div className="text-left">
                 <h1 className="text-base font-black text-slate-900 dark:text-white tracking-tighter leading-none">FinGes</h1>
-                <span className="text-[9px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-[0.18em]">Premium</span>
+                <span className="text-[9px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-[0.18em]">Premium</span>
               </div>
             </button>
             <button
@@ -172,8 +186,8 @@ const Layout: React.FC<LayoutProps> = ({
             className="flex items-center gap-3 px-3 py-2.5 mb-3 rounded-xl
               bg-slate-50 dark:bg-white/[0.03]
               border border-slate-200/60 dark:border-white/[0.05]
-              text-slate-400 dark:text-[#4a4f6e]
-              hover:text-slate-600 dark:hover:text-slate-300
+              text-slate-400 dark:text-[#e8eaf3]
+              hover:text-slate-600 dark:hover:text-white
               transition-colors group"
           >
             <Search size={15} />
@@ -219,12 +233,12 @@ const Layout: React.FC<LayoutProps> = ({
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-bold text-slate-900 dark:text-white truncate leading-none">{user.name}</p>
-                <p className="text-[9px] font-medium text-slate-400 dark:text-[#4a4f6e] truncate mt-0.5">Conta Premium</p>
+                <p className="text-[9px] font-medium text-slate-400 dark:text-[#e8eaf3] truncate mt-0.5">Conta Premium</p>
               </div>
             </div>
             <button
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 dark:text-[#4a4f6e] hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/[0.07] rounded-xl transition-all text-sm font-semibold"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 dark:text-[#e8eaf3] hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/[0.07] rounded-xl transition-all text-sm font-semibold"
             >
               <LogOut size={16} />
               <span>Sair da conta</span>
@@ -238,7 +252,7 @@ const Layout: React.FC<LayoutProps> = ({
 
         {/* HEADER */}
         <header className="
-          bg-white/80 dark:bg-[#07080d]/80
+          bg-white/80 dark:bg-[#101119]/80
           backdrop-blur-xl
           border-b border-slate-200/60 dark:border-white/[0.05]
           h-14 md:h-16
@@ -249,7 +263,7 @@ const Layout: React.FC<LayoutProps> = ({
         ">
           <div className="flex items-center gap-3">
             <button
-              className="p-2 md:hidden text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.07] transition-colors"
+              className="p-2 md:hidden text-slate-500 dark:text-[#e8eaf3] hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.07] transition-colors"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu size={20} />
@@ -273,8 +287,8 @@ const Layout: React.FC<LayoutProps> = ({
               className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl
                 bg-slate-100 dark:bg-white/[0.05]
                 border border-slate-200/70 dark:border-white/[0.06]
-                text-slate-400 dark:text-[#4a4f6e]
-                hover:text-slate-600 dark:hover:text-slate-300
+                text-slate-400 dark:text-[#e8eaf3]
+                hover:text-slate-600 dark:hover:text-white
                 transition-all text-xs font-medium w-44"
             >
               <Search size={14} />
@@ -284,10 +298,10 @@ const Layout: React.FC<LayoutProps> = ({
             <button
               onClick={() => setSearchOpen(true)}
               className="md:hidden p-2.5 rounded-xl
-                bg-white dark:bg-[#10111e]
+                bg-white dark:bg-[#1d1f2e]
                 border border-slate-200/70 dark:border-white/[0.06]
-                text-slate-400 dark:text-[#4a4f6e]
-                hover:text-slate-600 dark:hover:text-slate-300
+                text-slate-400 dark:text-[#e8eaf3]
+                hover:text-slate-600 dark:hover:text-white
                 transition-all"
             >
               <Search size={17} />
@@ -299,6 +313,7 @@ const Layout: React.FC<LayoutProps> = ({
               hasTransactions={transactions.length > 0}
               user={user}
               transactions={transactions}
+              onNavigate={handleAlertNavigate}
             />
 
             <div className="relative">
@@ -314,7 +329,7 @@ const Layout: React.FC<LayoutProps> = ({
                 </div>
                 <div className="hidden md:flex flex-col items-start">
                   <span className="text-xs font-bold text-slate-800 dark:text-white leading-none tracking-tight">{user.name}</span>
-                  <span className="text-[9px] font-semibold text-slate-400 dark:text-[#4a4f6e] leading-none mt-0.5 uppercase tracking-widest">Premium</span>
+                  <span className="text-[9px] font-semibold text-slate-400 dark:text-[#e8eaf3] leading-none mt-0.5 uppercase tracking-widest">Premium</span>
                 </div>
                 <ChevronDown size={14} className={`hidden md:block text-slate-400 transition-transform duration-300 ${userMenuOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -323,7 +338,7 @@ const Layout: React.FC<LayoutProps> = ({
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
                   <div className="absolute right-0 mt-2 w-52
-                    bg-white dark:bg-[#0f1021]
+                    bg-white dark:bg-[#1c1e2f]
                     border border-slate-200/70 dark:border-white/[0.07]
                     rounded-2xl shadow-xl dark:shadow-black/50
                     z-20 overflow-hidden
@@ -332,7 +347,7 @@ const Layout: React.FC<LayoutProps> = ({
                     <div className="p-2">
                       <button
                         onClick={() => { setCurrentPage('settings'); setUserMenuOpen(false); }}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-700 dark:text-slate-200 transition-all text-sm font-semibold"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-700 dark:text-[#e8eaf3] transition-all text-sm font-semibold"
                       >
                         <Settings size={16} className="text-slate-400" />
                         Meus Dados
@@ -373,7 +388,7 @@ const Layout: React.FC<LayoutProps> = ({
 
         {/* MOBILE BOTTOM NAV */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0
-          bg-white/90 dark:bg-[#07080d]/90
+          bg-white/90 dark:bg-[#101119]/90
           backdrop-blur-xl
           border-t border-slate-200/60 dark:border-white/[0.05]
           px-2 py-2 flex justify-around items-center z-40 pb-safe
@@ -399,7 +414,7 @@ const Layout: React.FC<LayoutProps> = ({
                 className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-xl transition-all ${
                   currentPage === id
                     ? 'text-primary dark:text-primary'
-                    : 'text-slate-400 dark:text-[#3d4060]'
+                    : 'text-slate-400 dark:text-[#e8eaf3]'
                 }`}
               >
                 <Icon size={20} strokeWidth={currentPage === id ? 2.5 : 1.8} />

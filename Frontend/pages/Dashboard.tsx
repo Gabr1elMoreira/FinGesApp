@@ -74,7 +74,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       {/* Header with customize */}
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-[0.2em]">
+          <p className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-[0.2em]">
             {MONTH_NAMES[selectedMonth]} {selectedYear}
           </p>
         </div>
@@ -84,8 +84,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={onFocusMode}
               title="Modo Foco"
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold
-                bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.06]
-                text-slate-500 dark:text-[#4a4f6e] hover:text-primary dark:hover:text-primary
+                bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.06]
+                text-slate-500 dark:text-[#e8eaf3] hover:text-primary dark:hover:text-primary
                 hover:border-primary/20 dark:hover:border-primary/20 transition-all"
             >
               <Crosshair size={14} />
@@ -98,7 +98,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
                 showWidgetPanel
                   ? 'bg-primary/[0.08] border-primary/20 text-primary'
-                  : 'bg-white dark:bg-[#10111e] border-slate-200/70 dark:border-white/[0.06] text-slate-500 dark:text-[#4a4f6e] hover:text-slate-700 dark:hover:text-white'
+                  : 'bg-white dark:bg-[#1d1f2e] border-slate-200/70 dark:border-white/[0.06] text-slate-500 dark:text-[#e8eaf3] hover:text-slate-700 dark:hover:text-white'
               }`}
             >
               <LayoutGrid size={14} />
@@ -109,7 +109,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowWidgetPanel(false)} />
                 <div className="absolute right-0 mt-2 w-64
-                  bg-white dark:bg-[#0f1021]
+                  bg-white dark:bg-[#1c1e2f]
                   border border-slate-200/70 dark:border-white/[0.07]
                   rounded-2xl shadow-xl dark:shadow-black/50
                   z-20 overflow-hidden
@@ -129,16 +129,16 @@ const Dashboard: React.FC<DashboardProps> = ({
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-all"
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className={`${widgetConfig[w.key] ? 'text-primary' : 'text-slate-300 dark:text-[#3d4060]'} transition-colors`}>
+                          <span className={`${widgetConfig[w.key] ? 'text-primary' : 'text-slate-300 dark:text-[#e8eaf3]'} transition-colors`}>
                             {w.icon}
                           </span>
-                          <span className={`text-xs font-semibold ${widgetConfig[w.key] ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400 dark:text-[#4a4f6e]'} transition-colors`}>
+                          <span className={`text-xs font-semibold ${widgetConfig[w.key] ? 'text-slate-700 dark:text-[#e8eaf3]' : 'text-slate-400 dark:text-[#e8eaf3]'} transition-colors`}>
                             {w.label}
                           </span>
                         </div>
                         {widgetConfig[w.key]
                           ? <Eye size={14} className="text-primary" />
-                          : <EyeOff size={14} className="text-slate-300 dark:text-[#3d4060]" />
+                          : <EyeOff size={14} className="text-slate-300 dark:text-[#e8eaf3]" />
                         }
                       </button>
                     ))}
@@ -188,7 +188,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       {widgetConfig.showAlerts && alerts.length > 0 && (
         <div className="
           relative overflow-hidden rounded-2xl
-          bg-white dark:bg-[#10111e]
+          bg-white dark:bg-[#1d1f2e]
           border border-rose-200/60 dark:border-rose-500/[0.15]
           shadow-sm dark:shadow-black/30
           p-5
@@ -205,7 +205,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
           <ul className="space-y-2.5 relative z-10">
             {alerts.map((al, idx) => (
-              <li key={idx} className="flex gap-3 text-sm font-medium text-slate-600 dark:text-slate-300 leading-snug">
+              <li key={idx} className="flex gap-3 text-sm font-medium text-slate-600 dark:text-[#e8eaf3] leading-snug">
                 <span className="w-1 h-1 bg-rose-500 rounded-full mt-2 shrink-0" />
                 {al}
               </li>
@@ -227,13 +227,13 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Recent transactions */}
       {widgetConfig.showRecent && (
-        <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30">
+        <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30">
           <div className="px-5 py-4 border-b border-slate-100 dark:border-white/[0.05] flex items-center gap-3">
             <div className="w-7 h-7 bg-primary/[0.1] rounded-lg flex items-center justify-center">
               <Zap size={14} className="text-primary" fill="currentColor" />
             </div>
             <h3 className="font-bold text-slate-900 dark:text-white text-sm tracking-tight">Últimos Lançamentos</h3>
-            <span className="ml-auto text-[10px] font-bold text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest">
+            <span className="ml-auto text-[10px] font-bold text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest">
               {MONTH_NAMES[selectedMonth]} {selectedYear}
             </span>
           </div>
@@ -252,7 +252,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] font-bold text-primary dark:text-primary-light uppercase tracking-wide">{t.category}</span>
                       <span className="text-[10px] text-slate-300 dark:text-[#2a2e48]">·</span>
-                      <span className="text-[10px] text-slate-400 dark:text-[#4a4f6e] font-mono">{formatDateFull(t.date)}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-[#e8eaf3] font-mono">{formatDateFull(t.date)}</span>
                     </div>
                   </div>
                   <span className={`text-sm font-black font-mono-num tracking-tight shrink-0 ${
@@ -268,7 +268,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <div className="w-12 h-12 bg-slate-100 dark:bg-white/[0.04] rounded-2xl flex items-center justify-center mx-auto mb-3">
                   <Zap size={20} className="text-slate-300 dark:text-[#2a2e48]" />
                 </div>
-                <p className="text-slate-400 dark:text-[#4a4f6e] font-medium text-sm">Nenhum lançamento este mês</p>
+                <p className="text-slate-400 dark:text-[#e8eaf3] font-medium text-sm">Nenhum lançamento este mês</p>
               </div>
             )}
           </div>

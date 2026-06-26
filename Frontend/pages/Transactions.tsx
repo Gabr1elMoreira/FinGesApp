@@ -110,7 +110,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Movimentações</h2>
-          <p className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium mt-0.5">
             {transactions.length} transações no período
             {activeFilterCount > 0 && (
               <span className="ml-2 text-primary">· {filtered.length} exibidas</span>
@@ -138,7 +138,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
             type="text"
             placeholder="Pesquisar transação..."
             className="w-full pl-10 pr-4 py-3 rounded-xl text-sm font-medium
-              bg-white dark:bg-[#10111e]
+              bg-white dark:bg-[#1d1f2e]
               border border-slate-200/70 dark:border-white/[0.06]
               text-slate-900 dark:text-[#eaebf4]
               placeholder:text-slate-400 dark:placeholder:text-[#3d4060]
@@ -152,7 +152,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
         <div className="flex gap-2">
           {/* Type filter pills */}
-          <div className="flex gap-1.5 p-1 bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.06] rounded-xl">
+          <div className="flex gap-1.5 p-1 bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.06] rounded-xl">
             {(['ALL', 'INCOME', 'EXPENSE'] as const).map(type => (
               <button
                 key={type}
@@ -164,7 +164,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
                       : type === 'INCOME'
                         ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
                         : 'bg-rose-500 text-white shadow-sm shadow-rose-500/20'
-                    : 'text-slate-500 dark:text-[#4a4f6e] hover:text-slate-700 dark:hover:text-slate-300'
+                    : 'text-slate-500 dark:text-[#e8eaf3] hover:text-slate-700 dark:hover:text-white'
                 }`}
               >
                 {type === 'ALL' ? 'Todas' : type === 'INCOME' ? 'Entradas' : 'Saídas'}
@@ -178,7 +178,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
             className={`relative flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
               showFilters || activeFilterCount > 0
                 ? 'bg-primary/[0.08] border-primary/20 text-primary dark:text-primary-light'
-                : 'bg-white dark:bg-[#10111e] border-slate-200/70 dark:border-white/[0.06] text-slate-500 dark:text-[#4a4f6e] hover:text-slate-700 dark:hover:text-slate-300'
+                : 'bg-white dark:bg-[#1d1f2e] border-slate-200/70 dark:border-white/[0.06] text-slate-500 dark:text-[#e8eaf3] hover:text-slate-700 dark:hover:text-white'
             }`}
           >
             <SlidersHorizontal size={16} />
@@ -194,9 +194,9 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
       {/* Advanced filters panel */}
       {showFilters && (
-        <div className="rounded-2xl bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 p-5 space-y-5 animate-in slide-in-from-top-2 duration-300">
+        <div className="rounded-2xl bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30 p-5 space-y-5 animate-in slide-in-from-top-2 duration-300">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-black text-slate-700 dark:text-slate-300 uppercase tracking-[0.15em]">Filtros Avançados</h3>
+            <h3 className="text-xs font-black text-slate-700 dark:text-[#e8eaf3] uppercase tracking-[0.15em]">Filtros Avançados</h3>
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
@@ -210,7 +210,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
           {/* Status */}
           <div>
-            <p className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest mb-2">Status</p>
+            <p className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest mb-2">Status</p>
             <div className="flex gap-2 flex-wrap">
               {(['ALL', 'PAID', 'PENDING'] as const).map(s => (
                 <button
@@ -223,7 +223,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
                         : s === 'PENDING'
                           ? 'bg-amber-500 border-amber-500 text-white'
                           : 'bg-slate-800 dark:bg-white border-slate-800 dark:border-white text-white dark:text-slate-900'
-                      : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#4a4f6e] hover:border-slate-300 dark:hover:border-white/[0.12]'
+                      : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#e8eaf3] hover:border-slate-300 dark:hover:border-white/[0.12]'
                   }`}
                 >
                   {s === 'ALL' ? 'Todos' : s === 'PAID' ? 'Pago' : 'Pendente'}
@@ -234,7 +234,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
           {/* Category */}
           <div>
-            <p className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest mb-2">Categoria</p>
+            <p className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest mb-2">Categoria</p>
             <div className="flex gap-2 flex-wrap">
               {enabledCategories.map(cat => (
                 <button
@@ -243,7 +243,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                     categoryFilter.includes(cat)
                       ? 'bg-primary/[0.1] border-primary/30 text-primary dark:text-primary-light'
-                      : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#4a4f6e] hover:border-slate-300 dark:hover:border-white/[0.12]'
+                      : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#e8eaf3] hover:border-slate-300 dark:hover:border-white/[0.12]'
                   }`}
                 >
                   {cat}
@@ -254,7 +254,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
           {/* Payment method */}
           <div>
-            <p className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest mb-2">Meio de Pagamento</p>
+            <p className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest mb-2">Meio de Pagamento</p>
             <div className="flex gap-2 flex-wrap">
               {PAYMENT_METHODS.map(pm => (
                 <button
@@ -263,7 +263,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
                     paymentFilter.includes(pm.value)
                       ? 'bg-accent/[0.1] border-accent/30 text-accent dark:text-accent'
-                      : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#4a4f6e] hover:border-slate-300 dark:hover:border-white/[0.12]'
+                      : 'border-slate-200 dark:border-white/[0.07] text-slate-500 dark:text-[#e8eaf3] hover:border-slate-300 dark:hover:border-white/[0.12]'
                   }`}
                 >
                   {pm.label}
@@ -274,7 +274,7 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
 
           {/* Amount range */}
           <div>
-            <p className="text-[9px] font-black text-slate-400 dark:text-[#4a4f6e] uppercase tracking-widest mb-2">Faixa de Valor</p>
+            <p className="text-[9px] font-black text-slate-400 dark:text-[#e8eaf3] uppercase tracking-widest mb-2">Faixa de Valor</p>
             <div className="flex items-center gap-3">
               <div className="relative flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-bold">R$</span>
@@ -337,13 +337,13 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
       </div>
 
       {/* Transaction list */}
-      <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#10111e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30">
+      <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#1d1f2e] border border-slate-200/70 dark:border-white/[0.055] shadow-sm dark:shadow-black/30">
         {filtered.length === 0 ? (
           <div className="px-5 py-16 text-center">
             <div className="w-14 h-14 bg-slate-100 dark:bg-white/[0.04] rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Search size={22} className="text-slate-300 dark:text-[#2a2e48]" />
             </div>
-            <p className="text-slate-500 dark:text-[#4a4f6e] font-medium">Nenhuma transação encontrada</p>
+            <p className="text-slate-500 dark:text-[#e8eaf3] font-medium">Nenhuma transação encontrada</p>
             {activeFilterCount > 0 && (
               <button onClick={clearFilters} className="mt-3 text-xs font-bold text-primary hover:underline">
                 Limpar filtros
@@ -372,11 +372,11 @@ const Transactions: React.FC<TransactionsProps> = ({ transactions, onAdd, onUpda
                   <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                     <span className="text-[10px] font-bold text-primary dark:text-primary-light uppercase tracking-wide">{t.category}</span>
                     <span className="text-[10px] text-slate-300 dark:text-[#2a2e48]">·</span>
-                    <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-[#4a4f6e] font-medium">
+                    <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-[#e8eaf3] font-medium">
                       {getMethodIcon(t.paymentMethod)}{t.paymentMethod}
                     </span>
                     <span className="text-[10px] text-slate-300 dark:text-[#2a2e48]">·</span>
-                    <span className="text-[10px] text-slate-400 dark:text-[#4a4f6e] font-mono">{formatDateSafe(t.date)}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-[#e8eaf3] font-mono">{formatDateSafe(t.date)}</span>
                   </div>
                 </div>
 

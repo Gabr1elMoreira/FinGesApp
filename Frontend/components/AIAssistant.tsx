@@ -69,14 +69,14 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ transactions, user, selectedM
       {/* Botão Flutuante */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-50 p-4 rounded-2xl bg-indigo-600 text-white shadow-2xl shadow-indigo-500/40 hover:scale-110 transition-all active:scale-95 flex items-center gap-2 group ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
+        className={`fixed bottom-24 right-5 sm:bottom-6 sm:right-6 z-50 p-4 rounded-2xl bg-indigo-600 text-white shadow-2xl shadow-indigo-500/40 hover:scale-110 transition-all active:scale-95 flex items-center gap-2 group ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
       >
         <Sparkles size={24} className="group-hover:rotate-12 transition-transform" />
         <span className="font-bold text-sm hidden sm:block">Perguntar à IA</span>
       </button>
 
       {/* Janela de Chat */}
-      <div className={`fixed bottom-6 right-6 z-50 w-[90vw] sm:w-[400px] h-[550px] bg-white dark:bg-slate-800 rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden transition-all duration-300 transform ${isOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-90 translate-y-10 opacity-0 pointer-events-none'}`}>
+      <div className={`fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-50 w-[90vw] sm:w-[400px] h-[70vh] max-h-[550px] bg-white dark:bg-slate-800 rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden transition-all duration-300 transform ${isOpen ? 'scale-100 translate-y-0 opacity-100' : 'scale-90 translate-y-10 opacity-0 pointer-events-none'}`}>
         {/* Header */}
         <div className="p-5 bg-indigo-600 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">

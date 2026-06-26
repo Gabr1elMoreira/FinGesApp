@@ -103,7 +103,7 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Metas e Orçamentos</h2>
-          <p className="text-xs text-slate-500 dark:text-[#4a4f6e] font-medium mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-[#e8eaf3] font-medium mt-0.5">
             {monthName} {selectedYear} · {filteredGoals.length} {filteredGoals.length === 1 ? 'meta' : 'metas'} ativas
           </p>
         </div>
@@ -123,7 +123,7 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
       {filteredGoals.length === 0 ? (
         /* Empty state */
         <div className="flex flex-col items-center justify-center py-20
-          rounded-2xl bg-white dark:bg-[#10111e]
+          rounded-2xl bg-white dark:bg-[#1d1f2e]
           border border-slate-200/70 dark:border-white/[0.055]
           border-dashed
           text-center px-8
@@ -132,7 +132,7 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
             <Target size={28} className="text-primary" />
           </div>
           <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight mb-2">Nenhuma meta definida</h3>
-          <p className="text-sm text-slate-500 dark:text-[#4a4f6e] font-medium max-w-sm mb-6 leading-relaxed">
+          <p className="text-sm text-slate-500 dark:text-[#e8eaf3] font-medium max-w-sm mb-6 leading-relaxed">
             Defina limites de gastos por categoria ou objetivos de poupança para ter maior controle financeiro.
           </p>
           <button
@@ -150,7 +150,7 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <PiggyBank size={15} className="text-accent" />
-                <h3 className="text-xs font-bold text-slate-500 dark:text-[#4a4f6e] uppercase tracking-[0.15em]">
+                <h3 className="text-xs font-bold text-slate-500 dark:text-[#e8eaf3] uppercase tracking-[0.15em]">
                   Poupança ({savingsGoals.length})
                 </h3>
               </div>
@@ -175,7 +175,7 @@ const Goals: React.FC<GoalsProps> = ({ transactions, user, theme, selectedMonth,
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <TrendingDown size={15} className="text-primary" />
-                <h3 className="text-xs font-bold text-slate-500 dark:text-[#4a4f6e] uppercase tracking-[0.15em]">
+                <h3 className="text-xs font-bold text-slate-500 dark:text-[#e8eaf3] uppercase tracking-[0.15em]">
                   Limites de Gastos ({spendingGoals.length})
                 </h3>
               </div>
